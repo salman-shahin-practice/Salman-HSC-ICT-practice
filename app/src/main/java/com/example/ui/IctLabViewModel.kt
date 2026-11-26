@@ -269,6 +269,10 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         _cCodeValue.value = TextFieldValue(problem.solutionCode, TextRange(problem.solutionCode.length))
     }
 
+    fun clearCResult() {
+        _cResult.value = null
+    }
+
     fun runCProgram(problem: PracticeProblemEntity) {
         val code = _cCodeValue.value.text
         val stdin = _cStdin.value
@@ -411,6 +415,17 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
 
     fun setAutoSync(enabled: Boolean) {
         viewModelScope.launch { repo.setAutoSync(enabled) }
+    }
+
+    fun updateInstructorPhoto(uri: android.net.Uri) {
+        viewModelScope.launch {
+            val saved = repo.prefs.saveInstructorPhotoFromUri(uri)
+            _snackbarMessage.value = if (saved) {
+                "আপনার ছবি সফলভাবে আপডেট করা হয়েছে!"
+            } else {
+                "ছবিটি লোড করা যায়নি, আবার চেষ্টা করুন।"
+            }
+        }
     }
 
     fun setupAdminPin(pin: String, onResult: (Boolean) -> Unit) {

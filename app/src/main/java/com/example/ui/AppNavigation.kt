@@ -208,7 +208,8 @@ fun HscIctLabApp() {
                                 onNavigateToExam = { navController.navigate(AppRoutes.ROUTE_EXAM) },
                                 onNavigateToProgress = { navigateToTab(AppRoutes.ROUTE_PROGRESS) },
                                 onNavigateToSettings = { navController.navigate(AppRoutes.ROUTE_SETTINGS) },
-                                onNavigateToAdmin = { navController.navigate(AppRoutes.ROUTE_ADMIN) }
+                                onNavigateToAdmin = { navController.navigate(AppRoutes.ROUTE_ADMIN) },
+                                onUpdateInstructorPhoto = viewModel::updateInstructorPhoto
                             )
                         }
 
@@ -251,6 +252,7 @@ fun HscIctLabApp() {
                                 onStdinChange = viewModel::updateCStdin,
                                 onToggleCloudCompiler = viewModel::toggleCloudCompiler,
                                 onRunProgram = viewModel::runCProgram,
+                                onClearOutput = viewModel::clearCResult,
                                 onResetStarter = viewModel::resetCStarter,
                                 onLoadSolution = viewModel::loadCSolution,
                                 onBookmark = { prob, code ->
@@ -282,6 +284,7 @@ fun HscIctLabApp() {
                                 state = state,
                                 prefill = supportPrefill,
                                 onSubmitTicket = viewModel::submitTicket,
+                                onUpdateInstructorPhoto = viewModel::updateInstructorPhoto,
                                 onShowMessage = viewModel::showMessage
                             )
                         }

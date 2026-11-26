@@ -1,5 +1,9 @@
 package com.example.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.AdminPanelSettings
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bookmark
@@ -37,10 +42,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,12 +57,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.R
 import com.example.data.model.UserRole
 import com.example.ui.IctLabUiState
@@ -66,6 +74,7 @@ import com.example.ui.theme.BengaliFontFamily
 import com.example.ui.theme.EmeraldSecondary
 import com.example.ui.theme.SuccessGreen
 import com.example.ui.theme.TealPrimary
+import java.io.File
 
 @Composable
 fun HomeScreen(
@@ -78,6 +87,7 @@ fun HomeScreen(
     onNavigateToProgress: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToAdmin: () -> Unit,
+    onUpdateInstructorPhoto: (Uri) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val htmlProblems = state.problems.filter { it.language == "HTML" }
@@ -435,6 +445,9 @@ fun HomeScreen(
         // Dedicated পরিচিতি (About / Instructor Profile) Section on Home
         item {
             InstructorProfileCard(
+                customPhotoPath = state.settings.instructorPhotoPath,
+                photoVersion = state.settings.instructorPhotoVersion,
+                onUpdatePhoto = onUpdateInstructorPhoto,
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 720.dp)
@@ -444,7 +457,21 @@ fun HomeScreen(
 }
 
 @Composable
-fun InstructorProfileCard(modifier: Modifier = Modifier) {
+fun InstructorProfileCard(
+    customPhotoPath: String? = null,
+    photoVersion: Long = 0L,
+    onUpdatePhoto: ((Uri) -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            onUpdatePhoto?.invoke(uri)
+        }
+    }
+
     Card(
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
@@ -475,16 +502,35 @@ fun InstructorProfileCard(modifier: Modifier = Modifier) {
                 )
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.img_salman_shahin),
-                contentDescription = "সালমান শাহীন - আদ্-দ্বীন সায়েন্স কলেজ, রংপুর",
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.TopCenter,
-                modifier = Modifier
-                    .size(116.dp)
-                    .clip(CircleShape)
-                    .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            )
+            if (customPhotoPath != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(File(customPhotoPath))
+                        .memoryCacheKey("instructor_$photoVersion")
+                        .diskCacheKey("instructor_$photoVersion")
+                        .build(),
+                    contentDescription = "সালমান শাহীন - আদ্-দ্বীন সায়েন্স কলেজ, রংপুর",
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .background(Color.White, CircleShape)
+                        .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.img_salman_shahin),
+                    contentDescription = "সালমান শাহীন - আদ্-দ্বীন সায়েন্স কলেজ, রংপুর",
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .background(Color.White, CircleShape)
+                        .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                )
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -515,6 +561,25 @@ fun InstructorProfileCard(modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if (onUpdatePhoto != null) {
+                OutlinedButton(
+                    onClick = {
+                        photoPicker.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                    modifier = Modifier.testTag("change_instructor_photo_btn")
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.AddPhotoAlternate,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text("ছবি পরিবর্তন করুন")
+                }
+            }
         }
     }
 }

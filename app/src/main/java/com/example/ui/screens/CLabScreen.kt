@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -16,12 +19,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.BookmarkAdd
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.ClearAll
 import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -35,6 +42,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +52,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +61,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -65,6 +75,7 @@ import com.example.ui.theme.AmberTertiary
 import com.example.ui.theme.ErrorCrimson
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.ui.theme.SuccessGreen
+import kotlinx.coroutines.delay
 
 @Composable
 fun CLabScreen(
@@ -85,8 +96,10 @@ fun CLabScreen(
     onLoadSolution: (PracticeProblemEntity) -> Unit,
     onBookmark: (PracticeProblemEntity, String) -> Unit,
     onAskDoubt: (String, String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClearOutput: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val cProblems = remember(state.problems) { state.problems.filter { it.language == "C" } }
     val activeProblem = cProblems.firstOrNull { it.id == selectedProblemId } ?: cProblems.firstOrNull()
     var showHint by remember { mutableStateOf(false) }
@@ -327,14 +340,15 @@ fun CLabScreen(
             )
         }
 
-        // Stdin Input Box for scanf
+        // Stdin Input Box for scanf (supports multi-line or space-separated inputs)
         item {
             OutlinedTextField(
                 value = stdinValue,
                 onValueChange = onStdinChange,
-                label = { Text("ইনপুট (scanf-এর জন্য, স্পেস দিয়ে লিখুন)") },
+                label = { Text("ইনপুট / Stdin (scanf-এর জন্য, স্পেস বা নতুন লাইনে লিখুন)") },
                 placeholder = { Text("যেমন: 10 5") },
-                singleLine = true,
+                minLines = 1,
+                maxLines = 4,
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("c_stdin_input")
@@ -364,7 +378,7 @@ fun CLabScreen(
                         Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
                     }
                     Spacer(Modifier.width(6.dp))
-                    Text(if (isRunning) "চলছে..." else "রান করো")
+                    Text(if (isRunning) "কম্পাইল ও রান চলছে..." else "কম্পাইল ও রান")
                 }
                 OutlinedButton(
                     onClick = { onResetStarter(activeProblem) },
@@ -378,7 +392,7 @@ fun CLabScreen(
                     onClick = { onLoadSolution(activeProblem) },
                     modifier = Modifier.testTag("c_sample_btn")
                 ) {
-                    Icon(Icons.Rounded.HelpOutline, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.AutoMirrored.Rounded.HelpOutline, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
                     Text("উত্তর")
                 }
@@ -388,6 +402,21 @@ fun CLabScreen(
         // Execution Output Console, Error Helper & Dry-Run Table
         if (execResult != null) {
             item {
+                var copiedOutput by remember { mutableStateOf(false) }
+                LaunchedEffect(copiedOutput) {
+                    if (copiedOutput) {
+                        delay(1400)
+                        copiedOutput = false
+                    }
+                }
+                val consoleText = execResult.output.ifBlank {
+                    if (execResult.success) {
+                        "(কোনো আউটপুট প্রিন্ট হয়নি — printf() ব্যবহার করে দেখো)"
+                    } else {
+                        execResult.error?.titleBn ?: "Compilation / execution failed"
+                    }
+                }
+
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // Output Console
                     Surface(
@@ -395,7 +424,7 @@ fun CLabScreen(
                         color = Color(0xFF0F172A),
                         border = BorderStroke(
                             1.dp,
-                            if (execResult.success) SuccessGreen.copy(alpha = 0.5f) else ErrorCrimson.copy(alpha = 0.6f)
+                            if (execResult.success) SuccessGreen.copy(alpha = 0.55f) else ErrorCrimson.copy(alpha = 0.65f)
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -412,7 +441,8 @@ fun CLabScreen(
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    modifier = Modifier.weight(1f)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Terminal,
@@ -420,39 +450,103 @@ fun CLabScreen(
                                         tint = Color(0xFF2DD4BF),
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Text(
-                                        text = "Output • ${execResult.executionMode}",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = Color(0xFF94A3B8)
-                                    )
-                                }
-                                if (execResult.passedTestCase != null) {
-                                    Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = if (execResult.passedTestCase) {
-                                            SuccessGreen.copy(alpha = 0.2f)
-                                        } else {
-                                            AmberTertiary.copy(alpha = 0.2f)
-                                        }
-                                    ) {
+                                    Column {
                                         Text(
-                                            text = if (execResult.passedTestCase) "Test Passed ✓" else "Check Output",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = if (execResult.passedTestCase) Color(0xFF4ADE80) else Color(0xFFFBBF24),
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                            text = if (execResult.success) "Exit 0 • ${execResult.executionMode}" else "Error • ${execResult.executionMode}",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = Color(0xFFE2E8F0)
+                                        )
+                                    }
+                                }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    if (execResult.passedTestCase != null) {
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = if (execResult.passedTestCase) {
+                                                SuccessGreen.copy(alpha = 0.22f)
+                                            } else {
+                                                AmberTertiary.copy(alpha = 0.22f)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = if (execResult.passedTestCase) "Test Passed ✓" else "Check Output",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = if (execResult.passedTestCase) Color(0xFF4ADE80) else Color(0xFFFBBF24),
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                            )
+                                        }
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                                            clipboard?.setPrimaryClip(ClipData.newPlainText("C Output", consoleText))
+                                            copiedOutput = true
+                                        },
+                                        modifier = Modifier
+                                            .size(34.dp)
+                                            .testTag("c_copy_output_btn")
+                                    ) {
+                                        Icon(
+                                            imageVector = if (copiedOutput) Icons.Rounded.Check else Icons.Rounded.ContentCopy,
+                                            contentDescription = "Copy console output",
+                                            tint = if (copiedOutput) Color(0xFF2DD4BF) else Color(0xFF94A3B8),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = onClearOutput,
+                                        modifier = Modifier
+                                            .size(34.dp)
+                                            .testTag("c_clear_output_btn")
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.ClearAll,
+                                            contentDescription = "Clear console output",
+                                            tint = Color(0xFF94A3B8),
+                                            modifier = Modifier.size(17.dp)
                                         )
                                     }
                                 }
                             }
 
-                            Text(
-                                text = execResult.output.ifBlank {
-                                    execResult.error?.titleBn ?: "Execution failed"
-                                },
-                                fontFamily = JetBrainsMonoFontFamily,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = if (execResult.success) Color(0xFFF8FAFC) else Color(0xFFFCA5A5)
-                            )
+                            HorizontalDivider(color = Color(0xFF1E293B))
+
+                            SelectionContainer {
+                                Text(
+                                    text = consoleText,
+                                    fontFamily = JetBrainsMonoFontFamily,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (execResult.success) Color(0xFFF8FAFC) else Color(0xFFFCA5A5)
+                                )
+                            }
+
+                            if (execResult.success && execResult.passedTestCase == false && activeProblem.expectedOutput.isNotBlank()) {
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = Color(0xFF1E293B),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(10.dp),
+                                        verticalArrangement = Arrangement.spacedBy(3.dp)
+                                    ) {
+                                        Text(
+                                            text = "প্রত্যাশিত আউটপুট (Expected):",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = Color(0xFFFBBF24)
+                                        )
+                                        Text(
+                                            text = activeProblem.expectedOutput,
+                                            fontFamily = JetBrainsMonoFontFamily,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFFE2E8F0)
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
 

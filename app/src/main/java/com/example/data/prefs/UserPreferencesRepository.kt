@@ -1,6 +1,7 @@
 package com.example.data.prefs
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -11,9 +12,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.data.model.EditorThemeMode
 import com.example.data.model.UserRole
+import java.io.File
 import java.security.MessageDigest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "hsc_ict_prefs")
 
@@ -25,7 +29,9 @@ data class UserSettings(
     val activeRole: UserRole = UserRole.STUDENT,
     val hasAdminPinConfigured: Boolean = false,
     val autoSyncEnabled: Boolean = true,
-    val lastSyncedAt: Long = 0L
+    val lastSyncedAt: Long = 0L,
+    val instructorPhotoPath: String? = null,
+    val instructorPhotoVersion: Long = 0L
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -39,6 +45,8 @@ class UserPreferencesRepository(private val context: Context) {
         val ADMIN_PIN_HASH = stringPreferencesKey("admin_pin_hash")
         val AUTO_SYNC = booleanPreferencesKey("auto_sync")
         val LAST_SYNCED_AT = longPreferencesKey("last_synced_at")
+        val INSTRUCTOR_PHOTO_PATH = stringPreferencesKey("instructor_photo_path")
+        val INSTRUCTOR_PHOTO_VERSION = longPreferencesKey("instructor_photo_version")
     }
 
     val settingsFlow: Flow<UserSettings> = context.dataStore.data.map { prefs ->
@@ -54,8 +62,29 @@ class UserPreferencesRepository(private val context: Context) {
             } ?: UserRole.STUDENT,
             hasAdminPinConfigured = !prefs[Keys.ADMIN_PIN_HASH].isNullOrBlank(),
             autoSyncEnabled = prefs[Keys.AUTO_SYNC] ?: true,
-            lastSyncedAt = prefs[Keys.LAST_SYNCED_AT] ?: 0L
+            lastSyncedAt = prefs[Keys.LAST_SYNCED_AT] ?: 0L,
+            instructorPhotoPath = prefs[Keys.INSTRUCTOR_PHOTO_PATH]?.takeIf {
+                it.isNotBlank() && File(it).exists()
+            },
+            instructorPhotoVersion = prefs[Keys.INSTRUCTOR_PHOTO_VERSION] ?: 0L
         )
+    }
+
+    suspend fun saveInstructorPhotoFromUri(uri: Uri): Boolean = withContext(Dispatchers.IO) {
+        runCatching {
+            val dest = File(context.filesDir, "salman_shahin_portrait.jpg")
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                dest.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            } ?: return@withContext false
+
+            context.dataStore.edit { prefs ->
+                prefs[Keys.INSTRUCTOR_PHOTO_PATH] = dest.absolutePath
+                prefs[Keys.INSTRUCTOR_PHOTO_VERSION] = System.currentTimeMillis()
+            }
+            true
+        }.getOrDefault(false)
     }
 
     suspend fun setDarkMode(enabled: Boolean) {

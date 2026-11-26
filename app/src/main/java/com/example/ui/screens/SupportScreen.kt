@@ -75,6 +75,7 @@ fun SupportScreen(
     state: IctLabUiState,
     prefill: SupportPrefill,
     onSubmitTicket: (String, String, String, String, String, String?) -> Unit,
+    onUpdateInstructorPhoto: (Uri) -> Unit,
     onShowMessage: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -519,7 +520,12 @@ fun SupportScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        InstructorProfileCard(modifier = Modifier.fillMaxWidth())
+                        InstructorProfileCard(
+                            customPhotoPath = state.settings.instructorPhotoPath,
+                            photoVersion = state.settings.instructorPhotoVersion,
+                            onUpdatePhoto = onUpdateInstructorPhoto,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
