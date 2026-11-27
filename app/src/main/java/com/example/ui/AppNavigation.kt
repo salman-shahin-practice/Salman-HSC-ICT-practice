@@ -69,6 +69,9 @@ object AppRoutes {
     const val ROUTE_ADMIN = "admin"
     const val ROUTE_SETTINGS = "settings"
     const val ROUTE_ALGO_FLOW = "algorithm_flowchart"
+    const val ROUTE_CALCULATOR = "scientific_calculator"
+    const val ROUTE_CALC_FX100 = "calc_fx100"
+    const val ROUTE_CALC_FX991 = "calc_fx991"
 }
 
 private data class NavTab(
@@ -212,7 +215,10 @@ fun HscIctLabApp() {
                                 onNavigateToSettings = { navController.navigate(AppRoutes.ROUTE_SETTINGS) },
                                 onNavigateToAdmin = { navController.navigate(AppRoutes.ROUTE_ADMIN) },
                                 onUpdateInstructorPhoto = viewModel::updateInstructorPhoto,
-                                onNavigateToAlgoFlow = { navController.navigate(AppRoutes.ROUTE_ALGO_FLOW) }
+                                onNavigateToAlgoFlow = { navController.navigate(AppRoutes.ROUTE_ALGO_FLOW) },
+                                onNavigateToCalculator = { navController.navigate(AppRoutes.ROUTE_CALCULATOR) },
+                                onNavigateToFx100 = { navController.navigate(AppRoutes.ROUTE_CALC_FX100) },
+                                onNavigateToFx991 = { navController.navigate(AppRoutes.ROUTE_CALC_FX991) }
                             )
                         }
 
@@ -333,6 +339,45 @@ fun HscIctLabApp() {
 
                         composable(AppRoutes.ROUTE_ALGO_FLOW) {
                             AlgorithmFlowchartScreen(
+                                onOpenInCLab = { code, stdin ->
+                                    viewModel.openAlgoCodeInCLab(code, stdin)
+                                    navController.popBackStack()
+                                    navigateToTab(AppRoutes.ROUTE_C_LAB)
+                                },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(AppRoutes.ROUTE_CALCULATOR) {
+                            AlgorithmFlowchartScreen(
+                                initialTab = 2,
+                                initialCalcMode = 2,
+                                onOpenInCLab = { code, stdin ->
+                                    viewModel.openAlgoCodeInCLab(code, stdin)
+                                    navController.popBackStack()
+                                    navigateToTab(AppRoutes.ROUTE_C_LAB)
+                                },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(AppRoutes.ROUTE_CALC_FX100) {
+                            AlgorithmFlowchartScreen(
+                                initialTab = 2,
+                                initialCalcMode = 0,
+                                onOpenInCLab = { code, stdin ->
+                                    viewModel.openAlgoCodeInCLab(code, stdin)
+                                    navController.popBackStack()
+                                    navigateToTab(AppRoutes.ROUTE_C_LAB)
+                                },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(AppRoutes.ROUTE_CALC_FX991) {
+                            AlgorithmFlowchartScreen(
+                                initialTab = 2,
+                                initialCalcMode = 1,
                                 onOpenInCLab = { code, stdin ->
                                     viewModel.openAlgoCodeInCLab(code, stdin)
                                     navController.popBackStack()

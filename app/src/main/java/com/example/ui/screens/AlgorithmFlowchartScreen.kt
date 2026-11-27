@@ -66,8 +66,11 @@ import androidx.compose.ui.unit.dp
 import com.example.data.local.AlgoTopicCategory
 import com.example.data.local.AlgorithmFlowchartData
 import com.example.data.local.AlgorithmFlowchartTopic
+import com.example.ui.components.CasioMsCalculatorDevice
+import com.example.ui.components.CasioMsModel
 import com.example.ui.components.FlowchartDiagramView
 import com.example.ui.components.FlowchartNodeBadge
+import com.example.ui.components.NumberSystemCalculatorSection
 import com.example.ui.theme.AmberTertiary
 import com.example.ui.theme.BengaliFontFamily
 import com.example.ui.theme.EmeraldSecondary
@@ -81,12 +84,14 @@ import kotlin.math.sqrt
 fun AlgorithmFlowchartScreen(
     onOpenInCLab: (code: String, stdin: String) -> Unit,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    initialTab: Int = 0,
+    initialCalcMode: Int = 0
 ) {
     BackHandler(onBack = onBack)
 
-    var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("প্রতীক পরিচিতি", "অ্যালগরিদম ও ফ্লোচার্ট", "ম্যাথ ক্যালকুলেটর")
+    var selectedTab by remember(initialTab) { mutableIntStateOf(initialTab.coerceIn(0, 2)) }
+    val tabs = listOf("প্রতীক পরিচিতি", "অ্যালগরিদম ও ফ্লোচার্ট", "সায়েন্টিফিক ক্যালকুলেটর")
 
     Column(modifier = modifier.fillMaxSize()) {
         // Header Bar
@@ -128,7 +133,7 @@ fun AlgorithmFlowchartScreen(
         when (selectedTab) {
             0 -> SymbolsReferenceTab()
             1 -> TopicsExplorerTab(onOpenInCLab = onOpenInCLab)
-            2 -> InteractiveMathSolverTab()
+            2 -> InteractiveMathSolverTab(initialCalcMode = initialCalcMode)
         }
     }
 }
@@ -501,7 +506,8 @@ private fun SymbolsReferenceTab() {
 }
 
 @Composable
-private fun InteractiveMathSolverTab() {
+private fun InteractiveMathSolverTab(initialCalcMode: Int = 0) {
+    var calcMode by remember(initialCalcMode) { mutableIntStateOf(initialCalcMode.coerceIn(0, 3)) }
     val modes = listOf(
         "ত্রিভুজ (হেরন)",
         "°C → °F তাপমাত্রা",
@@ -560,25 +566,91 @@ private fun InteractiveMathSolverTab() {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                modes.forEachIndexed { idx, label ->
-                    FilterChip(
-                        selected = selectedMode == idx,
-                        onClick = { selectedMode = idx },
-                        label = { Text(label) }
-                    )
-                }
+                FilterChip(
+                    selected = calcMode == 0,
+                    onClick = { calcMode = 0 },
+                    label = { Text("MS [fx-100MS]") },
+                    modifier = Modifier.testTag("calc_mode_fx100")
+                )
+                FilterChip(
+                    selected = calcMode == 1,
+                    onClick = { calcMode = 1 },
+                    label = { Text("MS [fx-991MS]") },
+                    modifier = Modifier.testTag("calc_mode_fx991")
+                )
+                FilterChip(
+                    selected = calcMode == 2,
+                    onClick = { calcMode = 2 },
+                    label = { Text("নাম্বার সিস্টেম (Base-N)") },
+                    modifier = Modifier.testTag("calc_mode_number_system")
+                )
+                FilterChip(
+                    selected = calcMode == 3,
+                    onClick = { calcMode = 3 },
+                    label = { Text("সূত্র সলভার (অধ্যায় ৫)") },
+                    modifier = Modifier.testTag("calc_mode_formula")
+                )
             }
         }
 
-        item {
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .widthIn(max = 760.dp)
-            ) {
+        when (calcMode) {
+            0 -> {
+                item {
+                    CasioMsCalculatorDevice(
+                        model = CasioMsModel.FX_100MS,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 760.dp)
+                    )
+                }
+            }
+            1 -> {
+                item {
+                    CasioMsCalculatorDevice(
+                        model = CasioMsModel.FX_991MS,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 760.dp)
+                    )
+                }
+            }
+            2 -> {
+                item {
+                    NumberSystemCalculatorSection(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 760.dp)
+                    )
+                }
+            }
+            else -> {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 760.dp)
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        modes.forEachIndexed { idx, label ->
+                            FilterChip(
+                                selected = selectedMode == idx,
+                                onClick = { selectedMode = idx },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Card(
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 760.dp)
+                    ) {
                 Column(
                     modifier = Modifier.padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -651,6 +723,8 @@ private fun InteractiveMathSolverTab() {
                                     fontFamily = JetBrainsMonoFontFamily,
                                     style = MaterialTheme.typography.bodySmall
                                 )
+                            }
+                        }
                             }
                         }
                     }

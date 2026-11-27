@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.AdminPanelSettings
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.CloudDone
@@ -95,7 +96,10 @@ fun HomeScreen(
     onNavigateToAdmin: () -> Unit,
     onUpdateInstructorPhoto: (Uri) -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateToAlgoFlow: () -> Unit = {}
+    onNavigateToAlgoFlow: () -> Unit = {},
+    onNavigateToCalculator: () -> Unit = {},
+    onNavigateToFx100: () -> Unit = {},
+    onNavigateToFx991: () -> Unit = {}
 ) {
     val htmlProblems = state.problems.filter { it.language == "HTML" }
     val cProblems = state.problems.filter { it.language == "C" }
@@ -382,7 +386,7 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "প্রতীক, সূত্র, উদাহরণ ম্যাথ, ফ্লোচার্ট ও লাইভ ক্যালকুলেটর",
+                            text = "প্রতীক, সূত্র, ফ্লোচার্ট, সায়েন্টিফিক ও নাম্বার সিস্টেম ক্যালকুলেটর",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -392,6 +396,163 @@ fun HomeScreen(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
+                }
+            }
+        }
+
+        // Direct Shortcuts: MS Series fx-100MS, fx-991MS & Number System Math
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 720.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedCard(
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.outlinedCardColors(
+                            containerColor = AmberTertiary.copy(alpha = 0.08f)
+                        ),
+                        border = BorderStroke(1.dp, AmberTertiary.copy(alpha = 0.45f)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(onClick = onNavigateToFx100)
+                            .testTag("home_fx100_card")
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(AmberTertiary),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Calculate,
+                                        contentDescription = "fx-100MS",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "MS [fx-100MS]",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "240 Functions",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = AmberTertiary
+                                    )
+                                }
+                            }
+                            Text(
+                                text = "ক্লাসিক ২-লাইন, ভগ্নাংশ (a b/c), SD ও সায়েন্টিফিক",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    OutlinedCard(
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.outlinedCardColors(
+                            containerColor = TealPrimary.copy(alpha = 0.08f)
+                        ),
+                        border = BorderStroke(1.dp, TealPrimary.copy(alpha = 0.45f)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(onClick = onNavigateToFx991)
+                            .testTag("home_fx991_card")
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(TealPrimary),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Calculate,
+                                        contentDescription = "fx-991MS",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "MS [fx-991MS]",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "401 Functions",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = TealPrimary
+                                    )
+                                }
+                            }
+                            Text(
+                                text = "BASE-N, EQN, জটিল সংখ্যা, ∫dx/d/dx ও সোলার",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                OutlinedCard(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.outlinedCardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.22f)
+                    ),
+                    border = BorderStroke(1.dp, EmeraldSecondary.copy(alpha = 0.35f)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onNavigateToCalculator)
+                        .testTag("home_sci_calc_card")
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "নাম্বার সিস্টেম বোর্ড ম্যাথ (BIN/OCT/DEC/HEX ও ২-এর পরিপূরক)",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = EmeraldSecondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                            contentDescription = null,
+                            tint = EmeraldSecondary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }
