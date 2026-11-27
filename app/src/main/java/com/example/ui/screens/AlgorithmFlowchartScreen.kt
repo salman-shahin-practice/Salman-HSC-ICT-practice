@@ -86,7 +86,7 @@ fun AlgorithmFlowchartScreen(
     BackHandler(onBack = onBack)
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("অ্যালগরিদম ও ম্যাথ", "প্রতীক পরিচিতি", "ম্যাথ ক্যালকুলেটর")
+    val tabs = listOf("প্রতীক পরিচিতি", "অ্যালগরিদম ও ফ্লোচার্ট", "ম্যাথ ক্যালকুলেটর")
 
     Column(modifier = modifier.fillMaxSize()) {
         // Header Bar
@@ -126,8 +126,8 @@ fun AlgorithmFlowchartScreen(
         }
 
         when (selectedTab) {
-            0 -> TopicsExplorerTab(onOpenInCLab = onOpenInCLab)
-            1 -> SymbolsReferenceTab()
+            0 -> SymbolsReferenceTab()
+            1 -> TopicsExplorerTab(onOpenInCLab = onOpenInCLab)
             2 -> InteractiveMathSolverTab()
         }
     }
