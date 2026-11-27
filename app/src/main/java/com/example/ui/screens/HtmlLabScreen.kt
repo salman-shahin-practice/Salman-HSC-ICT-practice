@@ -31,6 +31,7 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DesktopWindows
 import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.Lightbulb
@@ -98,7 +99,8 @@ fun HtmlLabScreen(
     onLoadSolution: (PracticeProblemEntity) -> Unit,
     onBookmark: (PracticeProblemEntity, String) -> Unit,
     onAskDoubt: (String, String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onOpenPlayground: (() -> Unit)? = null
 ) {
     val htmlProblems = remember(state.problems) { state.problems.filter { it.language == "HTML" } }
     val activeProblem = htmlProblems.firstOrNull { it.id == selectedProblemId } ?: htmlProblems.firstOrNull()
@@ -115,11 +117,46 @@ fun HtmlLabScreen(
         // Syllabus Module / Problem Selector Chips
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "HTML5 প্র্যাকটিস মডিউল",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "HTML5 প্র্যাকটিস মডিউল",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (onOpenPlayground != null) {
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable(onClick = onOpenPlayground)
+                                .testTag("open_html_playground_chip")
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Code,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "ফ্রি এডিটর",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -224,21 +261,22 @@ fun HtmlLabScreen(
                     if (showHint) {
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = AmberTertiary.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, AmberTertiary.copy(alpha = 0.3f))
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                            border = BorderStroke(1.dp, AmberTertiary.copy(alpha = 0.4f))
                         ) {
                             Column(
-                                modifier = Modifier.padding(10.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Text(
                                     text = "টিপস: ${activeProblem.hintBn}",
                                     style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Row(
                                     verticalAlignment = Alignment.Top,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.WarningAmber,
@@ -249,7 +287,7 @@ fun HtmlLabScreen(
                                     Text(
                                         text = "বোর্ড পরীক্ষায় সাধারণ ভুল: ${activeProblem.commonMistakeBn}",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -368,9 +406,9 @@ fun HtmlLabScreen(
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = borderCol.copy(alpha = 0.08f)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    border = BorderStroke(1.dp, borderCol.copy(alpha = 0.45f)),
+                    border = BorderStroke(1.5.dp, borderCol.copy(alpha = 0.65f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -432,7 +470,9 @@ private fun extractHtmlTitle(html: String): String {
 @Composable
 fun HtmlLivePreviewCard(
     htmlCode: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    fillPreviewHeight: Boolean = false,
+    previewTestTag: String = "html_live_webview"
 ) {
     var reloadNonce by remember { mutableIntStateOf(0) }
     var desktopMode by remember { mutableStateOf(false) }
@@ -446,7 +486,7 @@ fun HtmlLivePreviewCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)),
         modifier = modifier
     ) {
-        Column {
+        Column(modifier = if (fillPreviewHeight) Modifier.fillMaxSize() else Modifier.fillMaxWidth()) {
             // Browser Chrome Header
             Surface(
                 color = MaterialTheme.colorScheme.surfaceVariant,
@@ -587,16 +627,51 @@ fun HtmlLivePreviewCard(
                 }
             }
 
-            SandboxedHtmlWebView(
-                htmlCode = htmlCode,
-                reloadNonce = reloadNonce,
-                desktopMode = desktopMode,
-                onLinkClick = { clickedLinkUrl = it },
-                modifier = Modifier
+            val previewAreaModifier = if (fillPreviewHeight) {
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            } else {
+                Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .testTag("html_live_webview")
-            )
+            }
+
+            Box(modifier = previewAreaModifier) {
+                if (htmlCode.isBlank()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                            .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Public,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.65f),
+                            modifier = Modifier.size(34.dp)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "HTML কোড লিখুন — সাথে সাথে এখানে আউটপুট দেখা যাবে",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF475569)
+                        )
+                    }
+                } else {
+                    SandboxedHtmlWebView(
+                        htmlCode = htmlCode,
+                        reloadNonce = reloadNonce,
+                        desktopMode = desktopMode,
+                        onLinkClick = { clickedLinkUrl = it },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag(previewTestTag)
+                    )
+                }
+            }
         }
     }
 
@@ -684,7 +759,7 @@ private fun SandboxedHtmlWebView(
     onLinkClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var lastRenderedHash by remember { mutableIntStateOf(0) }
+    var lastRenderedHash by remember { mutableStateOf<Int?>(null) }
     AndroidView(
         factory = { ctx ->
             WebView(ctx).apply {

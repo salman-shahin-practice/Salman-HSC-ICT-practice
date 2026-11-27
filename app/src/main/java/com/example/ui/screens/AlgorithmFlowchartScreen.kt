@@ -91,7 +91,7 @@ fun AlgorithmFlowchartScreen(
     BackHandler(onBack = onBack)
 
     var selectedTab by remember(initialTab) { mutableIntStateOf(initialTab.coerceIn(0, 2)) }
-    val tabs = listOf("প্রতীক পরিচিতি", "অ্যালগরিদম ও ফ্লোচার্ট", "সায়েন্টিফিক ক্যালকুলেটর")
+    val tabs = listOf("প্রতীক", "অ্যালগরিদম", "ক্যালকুলেটর")
 
     Column(modifier = modifier.fillMaxSize()) {
         // Header Bar
@@ -381,12 +381,12 @@ private fun SectionBox(
 ) {
     Surface(
         shape = RoundedCornerShape(14.dp),
-        color = accentColor.copy(alpha = 0.06f),
-        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.25f)),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
@@ -396,7 +396,7 @@ private fun SectionBox(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = accentColor,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
                 )
                 Text(
@@ -404,7 +404,7 @@ private fun SectionBox(
                     fontFamily = BengaliFontFamily,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = accentColor
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             content()

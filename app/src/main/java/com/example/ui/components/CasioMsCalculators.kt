@@ -279,8 +279,8 @@ fun CasioMsCalculatorDevice(
                         }
                         Text(
                             text = "${model.subtitleBn} • ${model.functionsBadge}",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                            color = Color(0xFF94A3B8)
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.5.sp),
+                            color = Color(0xFFCBD5E1)
                         )
                     }
 
@@ -318,8 +318,8 @@ fun CasioMsCalculatorDevice(
                                 )
                                 Text(
                                     text = "TWO WAY POWER",
-                                    fontSize = 8.sp,
-                                    color = Color(0xFFCBD5E1),
+                                    fontSize = 10.sp,
+                                    color = Color(0xFFE2E8F0),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -331,8 +331,8 @@ fun CasioMsCalculatorDevice(
                         ) {
                             Text(
                                 text = "BATTERY",
-                                fontSize = 9.sp,
-                                color = Color(0xFFCBD5E1),
+                                fontSize = 10.sp,
+                                color = Color(0xFFE2E8F0),
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                             )
@@ -352,19 +352,18 @@ fun CasioMsCalculatorDevice(
                             val selected = fx991Mode == m
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = if (selected) TealPrimary else Color(0xFF0F172A).copy(alpha = 0.65f),
-                                border = BorderStroke(1.dp, if (selected) Color(0xFF5EEAD4) else Color(0xFF475569)),
+                                color = if (selected) TealPrimary else Color(0xFF0F172A).copy(alpha = 0.78f),
+                                border = BorderStroke(1.dp, if (selected) Color(0xFF5EEAD4) else Color(0xFF64748B)),
                                 modifier = Modifier
                                     .clickable { fx991Mode = m }
                                     .testTag("fx991_mode_${m.name}")
                             ) {
                                 Text(
                                     text = m.label,
-                                    fontFamily = JetBrainsMonoFontFamily,
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
-                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp)
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                 )
                             }
                         }
@@ -373,19 +372,18 @@ fun CasioMsCalculatorDevice(
                             val selected = fx100Mode == m
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = if (selected) AmberTertiary else Color(0xFF0F172A).copy(alpha = 0.65f),
-                                border = BorderStroke(1.dp, if (selected) Color(0xFFFDE68A) else Color(0xFF475569)),
+                                color = if (selected) AmberTertiary else Color(0xFF0F172A).copy(alpha = 0.78f),
+                                border = BorderStroke(1.dp, if (selected) Color(0xFFFDE68A) else Color(0xFF64748B)),
                                 modifier = Modifier
                                     .clickable { fx100Mode = m }
                                     .testTag("fx100_mode_${m.name}")
                             ) {
                                 Text(
                                     text = m.label,
-                                    fontFamily = JetBrainsMonoFontFamily,
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                    modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp)
                                 )
                             }
                         }
@@ -442,10 +440,10 @@ fun CasioMsCalculatorDevice(
                                         Text(
                                             text = angleUnit.label,
                                             fontFamily = JetBrainsMonoFontFamily,
-                                            fontSize = 10.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = lcdText,
-                                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                         )
                                     }
                                     Icon(
@@ -511,9 +509,9 @@ fun CasioMsCalculatorDevice(
                                         .horizontalScroll(rememberScrollState()),
                                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
-                                    Text("BIN:${baseSum.binary}", fontFamily = JetBrainsMonoFontFamily, fontSize = 10.sp, color = lcdText, fontWeight = FontWeight.Bold)
-                                    Text("OCT:${baseSum.octal}", fontFamily = JetBrainsMonoFontFamily, fontSize = 10.sp, color = lcdText, fontWeight = FontWeight.Bold)
-                                    Text("HEX:${baseSum.hex}", fontFamily = JetBrainsMonoFontFamily, fontSize = 10.sp, color = lcdText, fontWeight = FontWeight.Bold)
+                                    Text("BIN:${baseSum.binary}", fontFamily = JetBrainsMonoFontFamily, fontSize = 11.sp, color = lcdText, fontWeight = FontWeight.Bold)
+                                    Text("OCT:${baseSum.octal}", fontFamily = JetBrainsMonoFontFamily, fontSize = 11.sp, color = lcdText, fontWeight = FontWeight.Bold)
+                                    Text("HEX:${baseSum.hex}", fontFamily = JetBrainsMonoFontFamily, fontSize = 11.sp, color = lcdText, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -522,13 +520,14 @@ fun CasioMsCalculatorDevice(
                     // Top Function Control Row: SHIFT, ALPHA, REPLAY ▲▼, DRG, S⇔D
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.Bottom
                     ) {
                         MsKeyButton(
                             primary = "SHIFT",
-                            bg = if (shiftActive) Color(0xFFF59E0B) else Color(0xFF475569),
-                            fg = if (shiftActive) Color.Black else Color(0xFFFCD34D),
+                            secondary = "2nd",
+                            bg = if (shiftActive) Color(0xFFF59E0B) else Color(0xFF1E293B),
+                            fg = if (shiftActive) Color.Black else Color(0xFFFDE047),
                             onClick = {
                                 shiftActive = !shiftActive
                                 alphaActive = false
@@ -537,7 +536,8 @@ fun CasioMsCalculatorDevice(
                         )
                         MsKeyButton(
                             primary = "ALPHA",
-                            bg = if (alphaActive) Color(0xFFE11D48) else Color(0xFF475569),
+                            secondary = "VAR",
+                            bg = if (alphaActive) Color(0xFFE11D48) else Color(0xFF1E293B),
                             fg = if (alphaActive) Color.White else Color(0xFFFDA4AF),
                             onClick = {
                                 alphaActive = !alphaActive
@@ -546,53 +546,77 @@ fun CasioMsCalculatorDevice(
                             modifier = Modifier.weight(1f)
                         )
 
-                        // Authentic Oval REPLAY Rocker (▲ / ▼ history)
-                        Surface(
-                            shape = CircleShape,
-                            color = Color(0xFF475569),
-                            border = BorderStroke(1.dp, Color(0xFF94A3B8)),
-                            modifier = Modifier
-                                .weight(1.35f)
-                                .height(46.dp)
+                        // Authentic Oval REPLAY Rocker (▲ / ▼ history) with clean header label
+                        Column(
+                            modifier = Modifier.weight(1.25f),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly
+                            Text(
+                                text = "REPLAY",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFE2E8F0),
+                                maxLines = 1,
+                                softWrap = false,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = Color(0xFF334155),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.24f)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(46.dp)
                             ) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(46.dp)
-                                        .clickable {
-                                            if (history.isNotEmpty()) {
-                                                historyCursor = (historyCursor + 1).coerceAtMost(history.lastIndex)
-                                                expression = history[historyCursor].expr
-                                            }
-                                        }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
-                                    Icon(Icons.Rounded.ArrowDropUp, contentDescription = "Previous", tint = Color.White)
-                                }
-                                Text(
-                                    text = "REPLAY",
-                                    fontSize = 8.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFE2E8F0)
-                                )
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(46.dp)
-                                        .clickable {
-                                            if (history.isNotEmpty() && historyCursor > 0) {
-                                                historyCursor--
-                                                expression = history[historyCursor].expr
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(46.dp)
+                                            .clickable {
+                                                if (history.isNotEmpty()) {
+                                                    historyCursor = (historyCursor + 1).coerceAtMost(history.lastIndex)
+                                                    expression = history[historyCursor].expr
+                                                }
                                             }
-                                        }
-                                ) {
-                                    Icon(Icons.Rounded.ArrowDropDown, contentDescription = "Next", tint = Color.White)
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.ArrowDropUp,
+                                            contentDescription = "Previous",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(26.dp)
+                                        )
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .width(1.dp)
+                                            .height(22.dp)
+                                            .background(Color.White.copy(alpha = 0.2f))
+                                    )
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(46.dp)
+                                            .clickable {
+                                                if (history.isNotEmpty() && historyCursor > 0) {
+                                                    historyCursor--
+                                                    expression = history[historyCursor].expr
+                                                }
+                                            }
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.ArrowDropDown,
+                                            contentDescription = "Next",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(26.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -840,7 +864,7 @@ fun CasioMsCalculatorDevice(
                         MsKeyButton("7", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("7") }, modifier = Modifier.weight(1f))
                         MsKeyButton("8", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("8") }, modifier = Modifier.weight(1f))
                         MsKeyButton("9", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("9") }, modifier = Modifier.weight(1f))
-                        MsKeyButton("DEL", bg = Color(0xFFEA580C), fg = Color.White, onClick = { deleteLast() }, modifier = Modifier.weight(1f))
+                        MsKeyButton("DEL", bg = Color(0xFFD97706), fg = Color.White, onClick = { deleteLast() }, modifier = Modifier.weight(1f))
                         MsKeyButton("AC", secondary = "OFF", bg = Color(0xFFDC2626), fg = Color.White, onClick = {
                             expression = ""
                             displayResult = "0"
@@ -853,15 +877,15 @@ fun CasioMsCalculatorDevice(
                         MsKeyButton("4", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("4") }, modifier = Modifier.weight(1f))
                         MsKeyButton("5", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("5") }, modifier = Modifier.weight(1f))
                         MsKeyButton("6", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("6") }, modifier = Modifier.weight(1f))
-                        MsKeyButton("×", bg = Color(0xFF334155), fg = Color(0xFF5EEAD4), onClick = { appendToken("×") }, modifier = Modifier.weight(1f))
-                        MsKeyButton("÷", bg = Color(0xFF334155), fg = Color(0xFF5EEAD4), onClick = { appendToken("÷") }, modifier = Modifier.weight(1f))
+                        MsKeyButton("×", bg = Color(0xFF1E293B), fg = Color(0xFF99F6E4), onClick = { appendToken("×") }, modifier = Modifier.weight(1f))
+                        MsKeyButton("÷", bg = Color(0xFF1E293B), fg = Color(0xFF99F6E4), onClick = { appendToken("÷") }, modifier = Modifier.weight(1f))
                     }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         MsKeyButton("1", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("1") }, modifier = Modifier.weight(1f))
                         MsKeyButton("2", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("2") }, modifier = Modifier.weight(1f))
                         MsKeyButton("3", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("3") }, modifier = Modifier.weight(1f))
-                        MsKeyButton("+", bg = Color(0xFF334155), fg = Color(0xFF5EEAD4), onClick = { appendToken("+") }, modifier = Modifier.weight(1f))
-                        MsKeyButton("−", bg = Color(0xFF334155), fg = Color(0xFF5EEAD4), onClick = { appendToken("-") }, modifier = Modifier.weight(1f))
+                        MsKeyButton("+", bg = Color(0xFF1E293B), fg = Color(0xFF99F6E4), onClick = { appendToken("+") }, modifier = Modifier.weight(1f))
+                        MsKeyButton("−", bg = Color(0xFF1E293B), fg = Color(0xFF99F6E4), onClick = { appendToken("-") }, modifier = Modifier.weight(1f))
                     }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         MsKeyButton("0", bg = Color(0xFF334155), fg = Color.White, onClick = { appendToken("0") }, modifier = Modifier.weight(1f))
@@ -869,7 +893,7 @@ fun CasioMsCalculatorDevice(
                         MsKeyButton("EXP", secondary = "e", bg = Color(0xFF334155), fg = Color.White, onClick = {
                             appendToken(if (shiftActive) "e" else "*10^")
                         }, modifier = Modifier.weight(1f))
-                        MsKeyButton("Ans", secondary = "%", bg = Color(0xFF334155), fg = Color(0xFFFDE68A), onClick = {
+                        MsKeyButton("Ans", secondary = "%", bg = Color(0xFF334155), fg = Color(0xFFFEF08A), onClick = {
                             appendToken(if (shiftActive) "%" else "Ans")
                         }, modifier = Modifier.weight(1f))
                         MsKeyButton(
@@ -934,9 +958,9 @@ fun CasioMsCalculatorDevice(
                                     Text(
                                         text = label,
                                         fontFamily = JetBrainsMonoFontFamily,
-                                        fontSize = 10.sp,
-                                        color = Color(0xFF7DD3FC),
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                                        fontSize = 11.5.sp,
+                                        color = Color(0xFFBAE6FD),
+                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 6.dp)
                                     )
                                 }
                             }
@@ -988,10 +1012,10 @@ private fun LcdStatusBadge(text: String, active: Boolean, color: Color) {
         Text(
             text = text,
             fontFamily = JetBrainsMonoFontFamily,
-            fontSize = 9.sp,
+            fontSize = 10.5.sp,
             fontWeight = FontWeight.ExtraBold,
             color = color,
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+            modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
         )
     }
 }
@@ -1006,6 +1030,14 @@ private fun MsKeyButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isDigitOrOp = primary.length == 1 && (primary[0].isDigit() || primary in listOf(".", "+", "−", "×", "÷", "=", "(", ")", "^", "√", "X"))
+    val labelFontSize = when {
+        isDigitOrOp -> 17.sp
+        primary.length <= 2 -> 15.sp
+        primary.length == 3 -> 13.5.sp
+        else -> 11.5.sp
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -1014,29 +1046,31 @@ private fun MsKeyButton(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 1.dp),
+                    .padding(bottom = 2.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (secondary != null) {
                     Text(
                         text = secondary,
-                        fontSize = 8.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFFCD34D),
-                        maxLines = 1
+                        color = Color(0xFFFDE047),
+                        maxLines = 1,
+                        softWrap = false
                     )
                 }
                 if (secondary != null && alphaLabel != null) {
-                    Spacer(Modifier.width(3.dp))
+                    Spacer(Modifier.width(4.dp))
                 }
                 if (alphaLabel != null) {
                     Text(
                         text = alphaLabel,
-                        fontSize = 8.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFFDA4AF),
-                        maxLines = 1
+                        maxLines = 1,
+                        softWrap = false
                     )
                 }
             }
@@ -1044,21 +1078,26 @@ private fun MsKeyButton(
         Surface(
             shape = RoundedCornerShape(9.dp),
             color = bg,
-            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.24f)),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
+                .height(46.dp)
                 .clip(RoundedCornerShape(9.dp))
                 .clickable(onClick = onClick)
         ) {
-            Box(contentAlignment = Alignment.Center) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(horizontal = 2.dp)
+            ) {
                 Text(
                     text = primary,
-                    fontFamily = JetBrainsMonoFontFamily,
-                    fontSize = if (primary.length >= 4) 11.sp else 14.sp,
+                    fontFamily = if (isDigitOrOp) JetBrainsMonoFontFamily else androidx.compose.ui.text.font.FontFamily.SansSerif,
+                    fontSize = labelFontSize,
                     fontWeight = FontWeight.Bold,
                     color = fg,
-                    maxLines = 1
+                    maxLines = 1,
+                    softWrap = false,
+                    letterSpacing = 0.sp
                 )
             }
         }

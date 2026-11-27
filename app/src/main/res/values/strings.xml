@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">HSC ICT Lab</string>
     <string name="hero_hook_title">❝আমি বিশ্বাস করি না!❞ A+ পাবো?</string>
-    <string name="hero_hook_subtitle">ভয় নয়, হাতেনাতে প্র্যাকটিস করো HTML ও C প্রোগ্রামিং — প্রতিদিন অল্প চেষ্টাতেই HSC ICT-তে A+ নিশ্চিত!</string>
+    <string name="hero_hook_subtitle">ভয় নয়, নিজে হাতে HTML ও C কোড লিখে অনুশীলন করো — নিয়মিত চর্চাতেই HSC ICT-তে A+ হবে সহজ!</string>
     <string name="instructor_section_title">পরিচিতি</string>
     <string name="instructor_name">সালমান শাহীন</string>
     <string name="instructor_college">আদ্-দ্বীন সায়েন্স কলেজ, রংপুর</string>
-    <string name="instructor_message">প্রিয় HSC শিক্ষার্থীরা, মুখস্থ নয়—নিজের হাতে কোড লিখে ও ভুল থেকে শিখেই ICT-তে সর্বোচ্চ নম্বর পাওয়া সম্ভব।</string>
+    <string name="instructor_message">প্রিয় শিক্ষার্থীরা, মুখস্থ করে নয়—নিজে হাতে কোড লিখে ও ভুল থেকে শিখলেই ICT-তে সর্বোচ্চ নম্বর পাওয়া সম্ভব।</string>
     <string name="helpline_number">০১৯৫১-৭৯১৫৩২</string>
     <string name="helpline_number_en">01951791532</string>
     <string name="helpline_tel">+8801951791532</string>
@@ -14,5 +14,5 @@
     <string name="nav_html">HTML</string>
     <string name="nav_c">C ল্যাব</string>
     <string name="nav_progress">অগ্রগতি</string>
-    <string name="nav_support">সাপোর্ট</string>
+    <string name="nav_support">সাহায্য</string>
 </resources>

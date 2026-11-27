@@ -191,19 +191,19 @@ fun ProgressAndNotebookScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "সামগ্রিক প্রোগ্রেস ওভারভিউ",
+                                        text = "সামগ্রিক অগ্রগতির সারসংক্ষেপ",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Surface(
                                         shape = RoundedCornerShape(20.dp),
-                                        color = EmeraldSecondary.copy(alpha = 0.14f)
+                                        color = MaterialTheme.colorScheme.primaryContainer
                                     ) {
                                         Text(
                                             text = "$totalSolved/$totalProblems সমাধান",
                                             style = MaterialTheme.typography.labelMedium,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = EmeraldSecondary,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                         )
                                     }
@@ -252,7 +252,7 @@ fun ProgressAndNotebookScreen(
                                     ProgressMetricPill(
                                         icon = Icons.Rounded.LocalFireDepartment,
                                         value = "$streakDays দিন",
-                                        label = "অ্যাক্টিভ স্ট্রিক",
+                                        label = "নিয়মিত দিন",
                                         tint = AmberTertiary,
                                         modifier = Modifier.weight(1f)
                                     )
@@ -280,7 +280,7 @@ fun ProgressAndNotebookScreen(
                                 ) {
                                     Icon(Icons.Rounded.Quiz, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(8.dp))
-                                    Text("HSC বোর্ড মিনি-টেস্ট (Exam Mode) দাও")
+                                    Text("বোর্ড প্রস্তুতি কুইজ দাও")
                                 }
                             }
                         }
@@ -316,7 +316,7 @@ fun ProgressAndNotebookScreen(
                                             tint = TealPrimary
                                         )
                                         Text(
-                                            text = "মডিউল কমপ্লিশন রেট চার্ট (%)",
+                                            text = "মডিউলভিত্তিক অগ্রগতির হার (%)",
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -380,7 +380,7 @@ fun ProgressAndNotebookScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "মডিউলভিত্তিক দক্ষতা (Topic Mastery)",
+                                        text = "বিষয়ভিত্তিক দক্ষতা",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -424,7 +424,7 @@ fun ProgressAndNotebookScreen(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = "দৈনিক প্র্যাকটিস অ্যাক্টিভিটি (৭ দিন)",
+                                    text = "দৈনিক অনুশীলন (গত ৭ দিন)",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -451,7 +451,7 @@ fun ProgressAndNotebookScreen(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = "নির্ভুলতা ও ডিবাগিং উন্নতির গ্রাফ (%)",
+                                    text = "নির্ভুলতার হার (%)",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -646,7 +646,8 @@ private fun ProgressMetricPill(
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = tint.copy(alpha = 0.12f),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
         modifier = modifier
     ) {
         Row(
@@ -665,6 +666,7 @@ private fun ProgressMetricPill(
                     text = value,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
                 Text(

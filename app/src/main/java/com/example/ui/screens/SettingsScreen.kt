@@ -139,12 +139,12 @@ fun SettingsScreen(
                     OutlinedTextField(
                         value = nameDraft,
                         onValueChange = { nameDraft = it },
-                        label = { Text("তোমার নাম") },
+                        label = { Text("শিক্ষার্থীর নাম") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Button(onClick = { onSetStudentName(nameDraft) }) {
-                        Text("নাম সেভ করো")
+                        Text("নাম সংরক্ষণ করুন")
                     }
                 }
             }
@@ -168,7 +168,7 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("ডার্ক মোড (Dark Theme)", style = MaterialTheme.typography.bodyLarge)
+                        Text("ডার্ক মোড", style = MaterialTheme.typography.bodyLarge)
                         Switch(
                             checked = state.settings.isDarkMode,
                             onCheckedChange = onSetDarkMode,
@@ -232,7 +232,7 @@ fun SettingsScreen(
                     ) {
                         Icon(Icons.Rounded.Sync, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text("এখনই সিঙ্ক করো (${state.queuedSyncCount} পেন্ডিং)")
+                        Text("এখনই সিঙ্ক করুন (${state.queuedSyncCount}টি বাকি)")
                     }
 
                     Row(
@@ -247,7 +247,7 @@ fun SettingsScreen(
                         ) {
                             Icon(Icons.Rounded.Backup, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Backup")
+                            Text("ব্যাকআপ")
                         }
                         OutlinedButton(
                             onClick = { importLauncher.launch(arrayOf("application/json")) },
@@ -257,7 +257,7 @@ fun SettingsScreen(
                         ) {
                             Icon(Icons.Rounded.Restore, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Restore")
+                            Text("রিস্টোর")
                         }
                     }
                 }

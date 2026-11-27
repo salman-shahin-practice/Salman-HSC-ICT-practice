@@ -81,7 +81,7 @@ fun SupportScreen(
 ) {
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("প্রশ্ন করো", "টিকিট (${state.tickets.size})", "FAQ", "পরিচিতি")
+    val tabs = listOf("প্রশ্ন", "টিকিট (${state.tickets.size})", "সাধারণ প্রশ্ন", "পরিচিতি")
 
     var subject by remember { mutableStateOf("") }
     var category by remember { mutableStateOf(prefill.category) }
@@ -145,9 +145,9 @@ fun SupportScreen(
                         Card(
                             shape = RoundedCornerShape(18.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = EmeraldSecondary.copy(alpha = 0.1f)
+                                containerColor = MaterialTheme.colorScheme.surface
                             ),
-                            border = BorderStroke(1.dp, EmeraldSecondary.copy(alpha = 0.35f))
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.55f))
                         ) {
                             Column(
                                 modifier = Modifier.padding(14.dp),
@@ -215,7 +215,7 @@ fun SupportScreen(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = "কোড বা সমস্যা পাঠাও (অফলাইনেও জমা হবে)",
+                                    text = "সমস্যা বা প্রশ্ন পাঠান (অফলাইনেও জমা থাকবে)",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -320,7 +320,7 @@ fun SupportScreen(
                                 ) {
                                     Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(6.dp))
-                                    Text("টিকিট জমা দাও")
+                                    Text("প্রশ্ন জমা দিন")
                                 }
                             }
                         }
@@ -340,7 +340,7 @@ fun SupportScreen(
                         Text("এখনও কোনো সাপোর্ট টিকিট নেই", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "প্রথম ট্যাবে গিয়ে HTML বা C প্রোগ্রামিংয়ের যেকোনো প্রশ্ন পাঠাও!",
+                            "‘প্রশ্ন’ ট্যাবে গিয়ে HTML বা C প্রোগ্রামিংয়ের যেকোনো সমস্যা পাঠাতে পারেন।",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -411,8 +411,8 @@ fun SupportScreen(
                                     if (ticket.adminReply.isNotBlank()) {
                                         Surface(
                                             shape = RoundedCornerShape(10.dp),
-                                            color = SuccessGreen.copy(alpha = 0.1f),
-                                            border = BorderStroke(1.dp, SuccessGreen.copy(alpha = 0.3f))
+                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                                            border = BorderStroke(1.dp, SuccessGreen.copy(alpha = 0.4f))
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
                                                 Text(
@@ -440,9 +440,9 @@ fun SupportScreen(
                                             modifier = Modifier.size(14.dp)
                                         )
                                         Text(
-                                            text = if (synced) "Synced" else "Queued Offline (ইন্টারনেট পেলেই সিঙ্ক হবে)",
+                                            text = if (synced) "সংরক্ষিত ও সিঙ্ক সম্পন্ন" else "অফলাইনে জমা আছে (ইন্টারনেট পেলে সিঙ্ক হবে)",
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = if (synced) SuccessGreen else AmberTertiary
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                 }
@@ -463,7 +463,7 @@ fun SupportScreen(
                             value = faqSearch,
                             onValueChange = { faqSearch = it },
                             leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
-                            label = { Text("অফলাইন FAQ ও সাধারণ ভুল খুঁজুন") },
+                            label = { Text("সাধারণ প্রশ্ন ও সমাধান খুঁজুন") },
                             singleLine = true,
                             modifier = Modifier
                                 .fillMaxWidth()

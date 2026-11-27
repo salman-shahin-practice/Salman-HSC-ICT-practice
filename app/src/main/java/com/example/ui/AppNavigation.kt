@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Html
 import androidx.compose.material.icons.rounded.SupportAgent
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,6 +56,7 @@ import com.example.ui.screens.CLabScreen
 import com.example.ui.screens.ExamScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.HtmlLabScreen
+import com.example.ui.screens.HtmlPlaygroundScreen
 import com.example.ui.screens.ProgressAndNotebookScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.SupportScreen
@@ -72,6 +75,7 @@ object AppRoutes {
     const val ROUTE_CALCULATOR = "scientific_calculator"
     const val ROUTE_CALC_FX100 = "calc_fx100"
     const val ROUTE_CALC_FX991 = "calc_fx991"
+    const val ROUTE_HTML_PLAYGROUND = "html_playground"
 }
 
 private data class NavTab(
@@ -105,6 +109,8 @@ fun HscIctLabApp() {
     val htmlCode by viewModel.htmlCodeValue.collectAsStateWithLifecycle()
     val htmlCheck by viewModel.htmlCheckResult.collectAsStateWithLifecycle()
     val autoClose by viewModel.autoCloseSuggestion.collectAsStateWithLifecycle()
+    val playgroundHtmlCode by viewModel.playgroundHtmlCode.collectAsStateWithLifecycle()
+    val playgroundAutoClose by viewModel.playgroundAutoClose.collectAsStateWithLifecycle()
 
     val cProblemId by viewModel.selectedCProblemId.collectAsStateWithLifecycle()
     val cCode by viewModel.cCodeValue.collectAsStateWithLifecycle()
@@ -165,7 +171,14 @@ fun HscIctLabApp() {
                                             contentDescription = label
                                         )
                                     },
-                                    label = { Text(label, maxLines = 1) },
+                                    label = {
+                                        Text(
+                                            text = label,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = if (selected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
+                                            maxLines = 1
+                                        )
+                                    },
                                     modifier = Modifier.testTag("nav_${tab.route}")
                                 )
                             }
@@ -192,7 +205,14 @@ fun HscIctLabApp() {
                                             contentDescription = label
                                         )
                                     },
-                                    label = { Text(label, maxLines = 1) }
+                                    label = {
+                                        Text(
+                                            text = label,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = if (selected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
+                                            maxLines = 1
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -218,7 +238,8 @@ fun HscIctLabApp() {
                                 onNavigateToAlgoFlow = { navController.navigate(AppRoutes.ROUTE_ALGO_FLOW) },
                                 onNavigateToCalculator = { navController.navigate(AppRoutes.ROUTE_CALCULATOR) },
                                 onNavigateToFx100 = { navController.navigate(AppRoutes.ROUTE_CALC_FX100) },
-                                onNavigateToFx991 = { navController.navigate(AppRoutes.ROUTE_CALC_FX991) }
+                                onNavigateToFx991 = { navController.navigate(AppRoutes.ROUTE_CALC_FX991) },
+                                onNavigateToHtmlPlayground = { navController.navigate(AppRoutes.ROUTE_HTML_PLAYGROUND) }
                             )
                         }
 
@@ -242,7 +263,8 @@ fun HscIctLabApp() {
                                 onAskDoubt = { code, err ->
                                     viewModel.prepareSupportWithCode("HTML", code, err)
                                     navigateToTab(AppRoutes.ROUTE_SUPPORT)
-                                }
+                                },
+                                onOpenPlayground = { navController.navigate(AppRoutes.ROUTE_HTML_PLAYGROUND) }
                             )
                         }
 
@@ -383,6 +405,21 @@ fun HscIctLabApp() {
                                     navController.popBackStack()
                                     navigateToTab(AppRoutes.ROUTE_C_LAB)
                                 },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(AppRoutes.ROUTE_HTML_PLAYGROUND) {
+                            HtmlPlaygroundScreen(
+                                codeValue = playgroundHtmlCode,
+                                fontSizeSp = state.settings.editorFontSizeSp,
+                                themeMode = state.settings.editorTheme,
+                                autoCloseSuggestion = playgroundAutoClose,
+                                onCodeChange = viewModel::updatePlaygroundHtmlCode,
+                                onInsertSymbol = viewModel::insertPlaygroundHtmlSymbol,
+                                onApplyAutoClose = viewModel::applyPlaygroundAutoCloseTag,
+                                onLoadTemplate = viewModel::loadPlaygroundHtmlTemplate,
+                                onClearCode = viewModel::clearPlaygroundHtml,
                                 onBack = { navController.popBackStack() }
                             )
                         }

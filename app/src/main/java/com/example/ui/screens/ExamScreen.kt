@@ -113,7 +113,7 @@ fun ExamScreen(
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                     }
                     Text(
-                        text = "Exam Readiness Mode",
+                        text = "বোর্ড প্রস্তুতি পরীক্ষা",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -273,11 +273,13 @@ fun ExamScreen(
                         if (chosen != null) {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
                             ) {
                                 Text(
                                     text = "ব্যাখ্যা: ${currentQ.explanationBn}",
                                     style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.padding(12.dp)
                                 )
                             }

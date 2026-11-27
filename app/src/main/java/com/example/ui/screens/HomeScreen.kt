@@ -99,7 +99,8 @@ fun HomeScreen(
     onNavigateToAlgoFlow: () -> Unit = {},
     onNavigateToCalculator: () -> Unit = {},
     onNavigateToFx100: () -> Unit = {},
-    onNavigateToFx991: () -> Unit = {}
+    onNavigateToFx991: () -> Unit = {},
+    onNavigateToHtmlPlayground: () -> Unit = {}
 ) {
     val htmlProblems = state.problems.filter { it.language == "HTML" }
     val cProblems = state.problems.filter { it.language == "C" }
@@ -126,16 +127,17 @@ fun HomeScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "স্বাগতম, ${state.settings.studentName}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = if (state.settings.activeRole == UserRole.ADMIN) {
-                            "অ্যাডমিন মোড সক্রিয়"
+                            "অ্যাডমিন মোড চালু আছে"
                         } else {
-                            "HSC ICT প্র্যাকটিস ড্যাশবোর্ড"
+                            "HSC ICT অনুশীলন ড্যাশবোর্ড"
                         },
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -143,14 +145,14 @@ fun HomeScreen(
                 // Offline / Online + Smart Sync Badge
                 Surface(
                     shape = RoundedCornerShape(24.dp),
-                    color = if (state.isOnline) {
-                        SuccessGreen.copy(alpha = 0.14f)
-                    } else {
-                        AmberTertiary.copy(alpha = 0.16f)
-                    },
+                    color = MaterialTheme.colorScheme.surface,
                     border = BorderStroke(
                         1.dp,
-                        if (state.isOnline) SuccessGreen.copy(alpha = 0.4f) else AmberTertiary.copy(alpha = 0.4f)
+                        if (state.isOnline) {
+                            SuccessGreen.copy(alpha = 0.45f)
+                        } else {
+                            AmberTertiary.copy(alpha = 0.45f)
+                        }
                     ),
                     modifier = Modifier
                         .clip(RoundedCornerShape(24.dp))
@@ -174,14 +176,14 @@ fun HomeScreen(
                         )
                         Text(
                             text = when {
-                                isSyncing -> "Syncing..."
-                                state.isOnline && state.queuedSyncCount == 0 -> "Online • Synced"
-                                state.isOnline -> "Online • ${state.queuedSyncCount} Pending"
-                                else -> "Offline Mode"
+                                isSyncing -> "সিঙ্ক হচ্ছে..."
+                                state.isOnline && state.queuedSyncCount == 0 -> "অনলাইন • সংরক্ষিত"
+                                state.isOnline -> "অনলাইন • ${state.queuedSyncCount}টি বাকি"
+                                else -> "অফলাইন মোড"
                             },
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (state.isOnline) SuccessGreen else AmberTertiary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -211,8 +213,8 @@ fun HomeScreen(
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Color(0xD9042F2E),
-                                        Color(0xEB0F172A)
+                                        Color(0xE8062B28),
+                                        Color(0xFA0B1324)
                                     )
                                 )
                             )
@@ -226,23 +228,25 @@ fun HomeScreen(
                     ) {
                         Surface(
                             shape = RoundedCornerShape(20.dp),
-                            color = AmberTertiary.copy(alpha = 0.22f)
+                            color = Color(0xFF134E4A),
+                            border = BorderStroke(1.dp, Color(0xFF5EEAD4).copy(alpha = 0.45f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.AutoAwesome,
                                     contentDescription = null,
-                                    tint = Color(0xFFFBBF24),
-                                    modifier = Modifier.size(14.dp)
+                                    tint = Color(0xFFFDE047),
+                                    modifier = Modifier.size(15.dp)
                                 )
                                 Text(
                                     text = "HSC ICT • HTML5 & C Programming",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color(0xFFFEF3C7)
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White
                                 )
                             }
                         }
@@ -260,7 +264,8 @@ fun HomeScreen(
                             text = stringResource(R.string.hero_hook_subtitle),
                             fontFamily = BengaliFontFamily,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFE2E8F0)
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFFF1F5F9)
                         )
 
                         Spacer(Modifier.height(4.dp))
@@ -272,8 +277,8 @@ fun HomeScreen(
                             Button(
                                 onClick = onNavigateToHtml,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = EmeraldSecondary,
-                                    contentColor = Color.White
+                                    containerColor = Color.White,
+                                    contentColor = Color(0xFF062B28)
                                 ),
                                 modifier = Modifier
                                     .weight(1f)
@@ -287,11 +292,12 @@ fun HomeScreen(
                                 Spacer(Modifier.width(6.dp))
                                 Text("HTML ল্যাব", maxLines = 1)
                             }
-                            Button(
+                            OutlinedButton(
                                 onClick = onNavigateToC,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = AmberTertiary,
-                                    contentColor = Color.White
+                                border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.75f)),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color.White,
+                                    containerColor = Color.White.copy(alpha = 0.12f)
                                 ),
                                 modifier = Modifier
                                     .weight(1f)
@@ -321,20 +327,83 @@ fun HomeScreen(
             ) {
                 ProgressMiniCard(
                     title = "HTML5 অনুশীলন",
-                    solvedText = "$htmlSolved/${htmlProblems.size} সম্পন্ন",
+                    solvedText = "$htmlSolved/${htmlProblems.size}টি সমাধান",
                     percent = htmlPct,
-                    accentColor = TealPrimary,
+                    accentColor = MaterialTheme.colorScheme.primary,
                     onClick = onNavigateToHtml,
                     modifier = Modifier.weight(1f)
                 )
                 ProgressMiniCard(
                     title = "C প্রোগ্রামিং",
-                    solvedText = "$cSolved/${cProblems.size} সম্পন্ন",
+                    solvedText = "$cSolved/${cProblems.size}টি সমাধান",
                     percent = cPct,
-                    accentColor = AmberTertiary,
+                    accentColor = MaterialTheme.colorScheme.primary,
                     onClick = onNavigateToC,
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+
+        // Direct HTML Live Editor & Preview Card
+        item {
+            Card(
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 720.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .clickable(onClick = onNavigateToHtmlPlayground)
+                    .testTag("home_html_playground_card")
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Html,
+                            contentDescription = "HTML Live Editor & Preview",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = "HTML লাইভ এডিটর ও প্রিভিউ",
+                            fontFamily = BengaliFontFamily,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "কোড লিখুন এবং সাথে সাথে লাইভ ওয়েব প্রিভিউ দেখুন",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 
@@ -343,9 +412,10 @@ fun HomeScreen(
             Card(
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 720.dp)
@@ -356,7 +426,7 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp),
+                        .padding(15.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -364,13 +434,13 @@ fun HomeScreen(
                         modifier = Modifier
                             .size(46.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.primary),
+                            .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.AccountTree,
                             contentDescription = "Algorithm & Flowchart",
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -379,15 +449,15 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         Text(
-                            text = "অ্যালগরিদম, ফ্লোচার্ট ও ম্যাথ",
+                            text = "অ্যালগরিদম ও ফ্লোচার্ট",
                             fontFamily = BengaliFontFamily,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "প্রতীক, সূত্র, ফ্লোচার্ট, সায়েন্টিফিক ও নাম্বার সিস্টেম ক্যালকুলেটর",
-                            style = MaterialTheme.typography.bodySmall,
+                            text = "প্রতীক পরিচিতি, ধাপে ধাপে অ্যালগরিদম, ফ্লোচার্ট ও ম্যাথ সমাধান",
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -406,7 +476,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 720.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -415,16 +485,16 @@ fun HomeScreen(
                     OutlinedCard(
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.outlinedCardColors(
-                            containerColor = AmberTertiary.copy(alpha = 0.08f)
+                            containerColor = MaterialTheme.colorScheme.surface
                         ),
-                        border = BorderStroke(1.dp, AmberTertiary.copy(alpha = 0.45f)),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
                         modifier = Modifier
                             .weight(1f)
                             .clickable(onClick = onNavigateToFx100)
                             .testTag("home_fx100_card")
                     ) {
                         Column(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(14.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Row(
@@ -433,34 +503,36 @@ fun HomeScreen(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(34.dp)
+                                        .size(36.dp)
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(AmberTertiary),
+                                        .background(MaterialTheme.colorScheme.primaryContainer),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Calculate,
                                         contentDescription = "fx-100MS",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(18.dp)
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
                                 Column {
                                     Text(
-                                        text = "MS [fx-100MS]",
+                                        text = "fx-100MS",
                                         style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "240 Functions",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = AmberTertiary
+                                        text = "২৪০ ফাংশন",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                 }
                             }
                             Text(
-                                text = "ক্লাসিক ২-লাইন, ভগ্নাংশ (a b/c), SD ও সায়েন্টিফিক",
-                                style = MaterialTheme.typography.bodySmall,
+                                text = "সাধারণ হিসাব, ভগ্নাংশ ও পরিসংখ্যান",
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -469,16 +541,16 @@ fun HomeScreen(
                     OutlinedCard(
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.outlinedCardColors(
-                            containerColor = TealPrimary.copy(alpha = 0.08f)
+                            containerColor = MaterialTheme.colorScheme.surface
                         ),
-                        border = BorderStroke(1.dp, TealPrimary.copy(alpha = 0.45f)),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
                         modifier = Modifier
                             .weight(1f)
                             .clickable(onClick = onNavigateToFx991)
                             .testTag("home_fx991_card")
                     ) {
                         Column(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(14.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Row(
@@ -487,34 +559,36 @@ fun HomeScreen(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(34.dp)
+                                        .size(36.dp)
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(TealPrimary),
+                                        .background(MaterialTheme.colorScheme.primaryContainer),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Calculate,
                                         contentDescription = "fx-991MS",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(18.dp)
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
                                 Column {
                                     Text(
-                                        text = "MS [fx-991MS]",
+                                        text = "fx-991MS",
                                         style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "401 Functions",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = TealPrimary
+                                        text = "৪০১ ফাংশন",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                 }
                             }
                             Text(
-                                text = "BASE-N, EQN, জটিল সংখ্যা, ∫dx/d/dx ও সোলার",
-                                style = MaterialTheme.typography.bodySmall,
+                                text = "বেস-এন, সমীকরণ ও ক্যালকুলাস",
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -524,9 +598,9 @@ fun HomeScreen(
                 OutlinedCard(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.outlinedCardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.22f)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    border = BorderStroke(1.dp, EmeraldSecondary.copy(alpha = 0.35f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = onNavigateToCalculator)
@@ -535,21 +609,21 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                            .padding(horizontal = 14.dp, vertical = 13.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "নাম্বার সিস্টেম বোর্ড ম্যাথ (BIN/OCT/DEC/HEX ও ২-এর পরিপূরক)",
-                            style = MaterialTheme.typography.labelLarge,
+                            text = "সংখ্যা পদ্ধতি ক্যালকুলেটর (বাইনারি, অক্টাল, হেক্সা ও ২-এর পরিপূরক)",
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = EmeraldSecondary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f)
                         )
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                             contentDescription = null,
-                            tint = EmeraldSecondary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -568,15 +642,15 @@ fun HomeScreen(
                 QuickShortcutCard(
                     icon = Icons.Rounded.Quiz,
                     label = "বোর্ড পরীক্ষা",
-                    tint = TealPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = onNavigateToExam,
                     tag = "quick_exam_btn",
                     modifier = Modifier.weight(1f)
                 )
                 QuickShortcutCard(
                     icon = Icons.Rounded.Bookmark,
-                    label = "মিস্টেক ও বুকমার্ক",
-                    tint = EmeraldSecondary,
+                    label = "বুকমার্ক",
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = onNavigateToProgress,
                     tag = "quick_bookmarks_btn",
                     modifier = Modifier.weight(1f)
@@ -584,7 +658,7 @@ fun HomeScreen(
                 QuickShortcutCard(
                     icon = Icons.Rounded.AdminPanelSettings,
                     label = "অ্যাডমিন",
-                    tint = AmberTertiary,
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = onNavigateToAdmin,
                     tag = "quick_admin_btn",
                     modifier = Modifier.weight(1f)
@@ -798,20 +872,20 @@ fun InstructorProfileCard(
             val telNumber = stringResource(R.string.helpline_tel)
             Surface(
                 shape = RoundedCornerShape(14.dp),
-                color = EmeraldSecondary.copy(alpha = 0.09f),
-                border = BorderStroke(1.dp, EmeraldSecondary.copy(alpha = 0.28f)),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "WhatsApp: $whatsappNumEn",
+                        text = "হোয়াটসঅ্যাপ হেল্পলাইন: $whatsappNumEn",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = EmeraldSecondary,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.testTag("instructor_whatsapp_number")
                     )
                     Row(
@@ -826,7 +900,7 @@ fun InstructorProfileCard(
                                         Toast.makeText(context, "WhatsApp বা ব্রাউজার ওপেন করা যায়নি", Toast.LENGTH_SHORT).show()
                                     }
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldSecondary),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("instructor_whatsapp_btn")
@@ -889,14 +963,15 @@ private fun ProgressMiniCard(
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = modifier
             .clip(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -906,7 +981,8 @@ private fun ProgressMiniCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "$percent%",
@@ -919,14 +995,14 @@ private fun ProgressMiniCard(
                 progress = { (percent / 100f).coerceIn(0f, 1f) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(7.dp)
+                    .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
                 color = accentColor,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
             Text(
                 text = solvedText,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -945,7 +1021,8 @@ private fun QuickShortcutCard(
     Surface(
         shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.75f)),
+        shadowElevation = 1.dp,
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
             .clickable(onClick = onClick)
@@ -954,25 +1031,27 @@ private fun QuickShortcutCard(
         Column(
             modifier = Modifier.padding(vertical = 12.dp, horizontal = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(7.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
-                    .background(tint.copy(alpha = 0.14f)),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    tint = tint,
-                    modifier = Modifier.size(20.dp)
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(21.dp)
                 )
             }
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1
             )

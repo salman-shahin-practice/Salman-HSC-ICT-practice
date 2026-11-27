@@ -251,37 +251,42 @@ fun ScientificCalculatorSection(
                         SciKey(
                             label = if (secondMode) "sin⁻¹" else "sin",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken(if (secondMode) "asin(" else "sin(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = if (secondMode) "cos⁻¹" else "cos",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken(if (secondMode) "acos(" else "cos(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = if (secondMode) "tan⁻¹" else "tan",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken(if (secondMode) "atan(" else "tan(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = if (secondMode) "10ˣ" else "log",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken(if (secondMode) "10^" else "log(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = if (secondMode) "eˣ" else "ln",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken(if (secondMode) "exp(" else "ln(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                     }
 
@@ -292,37 +297,42 @@ fun ScientificCalculatorSection(
                         SciKey(
                             label = if (secondMode) "∛" else "√",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken(if (secondMode) "cbrt(" else "sqrt(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = "x²",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken("^2") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = "xʸ",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken("^") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = "n!",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken("!") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                         SciKey(
                             label = "|x|",
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { appendToken("abs(") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            bordered = true
                         )
                     }
 
@@ -330,11 +340,11 @@ fun ScientificCalculatorSection(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        SciKey("(", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken("(") }, Modifier.weight(1f))
-                        SciKey(")", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken(")") }, Modifier.weight(1f))
-                        SciKey("π", MaterialTheme.colorScheme.surfaceVariant, AmberTertiary, { appendToken("π") }, Modifier.weight(1f))
-                        SciKey("e", MaterialTheme.colorScheme.surfaceVariant, AmberTertiary, { appendToken("e") }, Modifier.weight(1f))
-                        SciKey("mod", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.primary, { appendToken(" mod ") }, Modifier.weight(1f))
+                        SciKey("(", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken("(") }, Modifier.weight(1f), bordered = true)
+                        SciKey(")", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken(")") }, Modifier.weight(1f), bordered = true)
+                        SciKey("π", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken("π") }, Modifier.weight(1f), bordered = true)
+                        SciKey("e", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken("e") }, Modifier.weight(1f), bordered = true)
+                        SciKey("mod", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.primary, { appendToken(" mod ") }, Modifier.weight(1f), bordered = true)
                     }
 
                     // Main Numeric Keypad
@@ -342,8 +352,8 @@ fun ScientificCalculatorSection(
                         SciKey("7", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("7") }, Modifier.weight(1f), bordered = true)
                         SciKey("8", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("8") }, Modifier.weight(1f), bordered = true)
                         SciKey("9", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("9") }, Modifier.weight(1f), bordered = true)
-                        SciKey("DEL", AmberTertiary.copy(alpha = 0.16f), AmberTertiary, { backspaceToken() }, Modifier.weight(1f))
-                        SciKey("AC", ErrorCrimson.copy(alpha = 0.15f), ErrorCrimson, {
+                        SciKey("DEL", AmberTertiary, Color.White, { backspaceToken() }, Modifier.weight(1f))
+                        SciKey("AC", ErrorCrimson, Color.White, {
                             expression = ""
                             evaluatedResult = "0"
                             errorMessage = null
@@ -354,23 +364,23 @@ fun ScientificCalculatorSection(
                         SciKey("4", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("4") }, Modifier.weight(1f), bordered = true)
                         SciKey("5", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("5") }, Modifier.weight(1f), bordered = true)
                         SciKey("6", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("6") }, Modifier.weight(1f), bordered = true)
-                        SciKey("×", TealPrimary.copy(alpha = 0.14f), TealPrimary, { appendToken("×") }, Modifier.weight(1f))
-                        SciKey("÷", TealPrimary.copy(alpha = 0.14f), TealPrimary, { appendToken("÷") }, Modifier.weight(1f))
+                        SciKey("×", MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, { appendToken("×") }, Modifier.weight(1f))
+                        SciKey("÷", MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, { appendToken("÷") }, Modifier.weight(1f))
                     }
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         SciKey("1", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("1") }, Modifier.weight(1f), bordered = true)
                         SciKey("2", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("2") }, Modifier.weight(1f), bordered = true)
                         SciKey("3", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("3") }, Modifier.weight(1f), bordered = true)
-                        SciKey("+", TealPrimary.copy(alpha = 0.14f), TealPrimary, { appendToken("+") }, Modifier.weight(1f))
-                        SciKey("−", TealPrimary.copy(alpha = 0.14f), TealPrimary, { appendToken("-") }, Modifier.weight(1f))
+                        SciKey("+", MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, { appendToken("+") }, Modifier.weight(1f))
+                        SciKey("−", MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, { appendToken("-") }, Modifier.weight(1f))
                     }
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         SciKey("0", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken("0") }, Modifier.weight(1f), bordered = true)
                         SciKey(".", MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.onSurface, { appendToken(".") }, Modifier.weight(1f), bordered = true)
-                        SciKey("%", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken("%") }, Modifier.weight(1f))
-                        SciKey("ANS", EmeraldSecondary.copy(alpha = 0.15f), EmeraldSecondary, { appendToken("ANS") }, Modifier.weight(1f))
+                        SciKey("%", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurface, { appendToken("%") }, Modifier.weight(1f), bordered = true)
+                        SciKey("ANS", MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, { appendToken("ANS") }, Modifier.weight(1f))
                         SciKey(
                             label = "=",
                             containerColor = TealPrimary,
@@ -1108,22 +1118,32 @@ private fun SciKey(
     modifier: Modifier = Modifier,
     bordered: Boolean = false
 ) {
+    val isSingle = label.length == 1
+    val fontSize = when {
+        isSingle -> 17.sp
+        label.length <= 3 -> 14.sp
+        else -> 12.sp
+    }
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = containerColor,
-        border = if (bordered) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.28f)) else null,
+        border = if (bordered) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)) else null,
         modifier = modifier
             .height(48.dp)
             .clickable(onClick = onClick)
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(horizontal = 2.dp)
+        ) {
             Text(
                 text = label,
-                fontFamily = JetBrainsMonoFontFamily,
-                fontSize = if (label.length > 3) 12.sp else 15.sp,
+                fontFamily = if (isSingle) JetBrainsMonoFontFamily else androidx.compose.ui.text.font.FontFamily.SansSerif,
+                fontSize = fontSize,
                 fontWeight = FontWeight.Bold,
                 color = contentColor,
-                maxLines = 1
+                maxLines = 1,
+                softWrap = false
             )
         }
     }
@@ -1137,12 +1157,21 @@ private fun BaseKeypadButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isAc = label == "AC"
     Surface(
         shape = RoundedCornerShape(10.dp),
-        color = if (enabled) accent.copy(alpha = 0.14f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+        color = when {
+            !enabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+            isAc -> ErrorCrimson
+            else -> MaterialTheme.colorScheme.surface
+        },
         border = BorderStroke(
             1.dp,
-            if (enabled) accent.copy(alpha = 0.35f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+            when {
+                !enabled -> MaterialTheme.colorScheme.outline.copy(alpha = 0.16f)
+                isAc -> ErrorCrimson
+                else -> MaterialTheme.colorScheme.outline.copy(alpha = 0.42f)
+            }
         ),
         modifier = modifier
             .height(48.dp)
@@ -1151,9 +1180,16 @@ private fun BaseKeypadButton(
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = label,
-                fontFamily = JetBrainsMonoFontFamily,
+                fontFamily = if (label.length == 1) JetBrainsMonoFontFamily else androidx.compose.ui.text.font.FontFamily.SansSerif,
+                fontSize = if (label.length == 1) 16.sp else 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (enabled) accent else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
+                color = when {
+                    !enabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    isAc -> Color.White
+                    else -> MaterialTheme.colorScheme.onSurface
+                },
+                maxLines = 1,
+                softWrap = false
             )
         }
     }

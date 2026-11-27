@@ -58,6 +58,7 @@ data class IctLabUiState(
 class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
 
     private var htmlDraftSaveJob: Job? = null
+    private var playgroundDraftSaveJob: Job? = null
     private var cDraftSaveJob: Job? = null
 
     private val coreBundle = combine(
@@ -124,6 +125,15 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
     private val _autoCloseSuggestion = MutableStateFlow<Pair<String, String>?>(null)
     val autoCloseSuggestion: StateFlow<Pair<String, String>?> = _autoCloseSuggestion.asStateFlow()
 
+    // HTML Playground (Free Editor + Live Preview) State
+    private val _playgroundHtmlCode = MutableStateFlow(
+        TextFieldValue(com.example.ui.screens.htmlPlaygroundTemplates.first().html)
+    )
+    val playgroundHtmlCode: StateFlow<TextFieldValue> = _playgroundHtmlCode.asStateFlow()
+
+    private val _playgroundAutoClose = MutableStateFlow<Pair<String, String>?>(null)
+    val playgroundAutoClose: StateFlow<Pair<String, String>?> = _playgroundAutoClose.asStateFlow()
+
     // C Lab Editor State
     private val _selectedCProblemId = MutableStateFlow("c_io_1")
     val selectedCProblemId: StateFlow<String> = _selectedCProblemId.asStateFlow()
@@ -160,6 +170,9 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
             repo.ensureSeeded()
             repo.getSavedCodeAndStdin(_selectedHtmlProblemId.value)?.let { (savedCode, _) ->
                 _htmlCodeValue.value = TextFieldValue(savedCode, TextRange(savedCode.length))
+            }
+            repo.getSavedCodeAndStdin("html_playground")?.let { (savedPlayground, _) ->
+                _playgroundHtmlCode.value = TextFieldValue(savedPlayground, TextRange(savedPlayground.length))
             }
             repo.getSavedCodeAndStdin(_selectedCProblemId.value)?.let { (savedCode, savedStdin) ->
                 _cCodeValue.value = TextFieldValue(savedCode, TextRange(savedCode.length))
@@ -281,6 +294,62 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
                 )
             }
         }
+    }
+
+    // ==================== HTML PLAYGROUND ACTIONS ====================
+    private fun schedulePlaygroundDraftSave() {
+        val code = _playgroundHtmlCode.value.text
+        playgroundDraftSaveJob?.cancel()
+        playgroundDraftSaveJob = viewModelScope.launch {
+            delay(400L)
+            repo.saveCodeDraft("html_playground", "HTML", code)
+        }
+    }
+
+    fun updatePlaygroundHtmlCode(value: TextFieldValue) {
+        val oldText = _playgroundHtmlCode.value.text
+        _playgroundHtmlCode.value = value
+        if (value.text != oldText) {
+            schedulePlaygroundDraftSave()
+        }
+        if (value.text.length == oldText.length + 1 && value.selection.start > 0) {
+            val typedChar = value.text.getOrNull(value.selection.start - 1)
+            if (typedChar == '>') {
+                val prefix = value.text.substring(0, value.selection.start)
+                _playgroundAutoClose.value = HtmlAnalyzer.autoCloseSuggestion(prefix)
+            } else {
+                _playgroundAutoClose.value = null
+            }
+        } else {
+            _playgroundAutoClose.value = null
+        }
+    }
+
+    fun applyPlaygroundAutoCloseTag() {
+        val suggestion = _playgroundAutoClose.value ?: return
+        val cur = _playgroundHtmlCode.value
+        val pos = cur.selection.start.coerceIn(0, cur.text.length)
+        val newText = cur.text.substring(0, pos) + suggestion.second + cur.text.substring(pos)
+        _playgroundHtmlCode.value = TextFieldValue(newText, TextRange(pos))
+        _playgroundAutoClose.value = null
+        schedulePlaygroundDraftSave()
+    }
+
+    fun insertPlaygroundHtmlSymbol(symbol: String) {
+        _playgroundHtmlCode.update { insertAtCursor(it, symbol) }
+        schedulePlaygroundDraftSave()
+    }
+
+    fun loadPlaygroundHtmlTemplate(templateHtml: String) {
+        _playgroundHtmlCode.value = TextFieldValue(templateHtml, TextRange(templateHtml.length))
+        _playgroundAutoClose.value = null
+        schedulePlaygroundDraftSave()
+    }
+
+    fun clearPlaygroundHtml() {
+        _playgroundHtmlCode.value = TextFieldValue("", TextRange(0))
+        _playgroundAutoClose.value = null
+        schedulePlaygroundDraftSave()
     }
 
     // ==================== C LAB ACTIONS ====================

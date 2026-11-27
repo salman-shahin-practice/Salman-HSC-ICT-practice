@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -103,7 +104,9 @@ fun CodeEditorPanel(
     readOnly: Boolean = false,
     showHeaderBar: Boolean = true,
     showSymbolToolbar: Boolean = true,
-    placeholder: String = ""
+    placeholder: String = "",
+    fillAvailableHeight: Boolean = false,
+    editorTestTag: String? = null
 ) {
     val context = LocalContext.current
     val palette = remember(themeMode) { resolveEditorPalette(themeMode) }
@@ -193,7 +196,9 @@ fun CodeEditorPanel(
         color = palette.background,
         border = BorderStroke(1.dp, palette.gutterText.copy(alpha = 0.25f))
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = if (fillAvailableHeight) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
+        ) {
             // Compact Editor Header Bar (Language tag, Ln/Col, Undo/Redo, Indent, Copy)
             if (showHeaderBar) {
                 Row(
@@ -427,10 +432,17 @@ fun CodeEditorPanel(
 
             // Line Number Gutter + Highlighted Editable Text Field
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 210.dp, max = 340.dp)
-                    .verticalScroll(scrollVertical)
+                modifier = if (fillAvailableHeight) {
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(scrollVertical)
+                } else {
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 210.dp, max = 340.dp)
+                        .verticalScroll(scrollVertical)
+                }
             ) {
                 // Gutter with Active Line Indicator
                 val gutterWidth = if (lineCount >= 100) 44.dp else 38.dp
@@ -502,7 +514,10 @@ fun CodeEditorPanel(
                             modifier = Modifier
                                 .widthIn(min = minCanvasWidth)
                                 .defaultMinSize(minHeight = 190.dp)
-                                .testTag(if (language == LabLanguage.HTML) "html_code_editor" else "c_code_editor")
+                                .testTag(
+                                    editorTestTag
+                                        ?: if (language == LabLanguage.HTML) "html_code_editor" else "c_code_editor"
+                                )
                         )
                     }
                 }

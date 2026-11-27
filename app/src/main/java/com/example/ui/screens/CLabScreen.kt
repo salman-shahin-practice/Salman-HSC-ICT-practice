@@ -256,21 +256,22 @@ fun CLabScreen(
                     if (showHint) {
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = AmberTertiary.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, AmberTertiary.copy(alpha = 0.3f))
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                            border = BorderStroke(1.dp, AmberTertiary.copy(alpha = 0.4f))
                         ) {
                             Column(
-                                modifier = Modifier.padding(10.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Text(
                                     text = "টিপস: ${activeProblem.hintBn}",
                                     style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Row(
                                     verticalAlignment = Alignment.Top,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.WarningAmber,
@@ -281,7 +282,7 @@ fun CLabScreen(
                                     Text(
                                         text = "সাধারণ ভুল: ${activeProblem.commonMistakeBn}",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }

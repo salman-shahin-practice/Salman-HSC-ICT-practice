@@ -308,19 +308,19 @@ fun ModuleCompletionBarChart(
                 ) {
                     Text(
                         text = "100%",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall,
                         color = axisTextColor,
                         modifier = Modifier.padding(end = 6.dp)
                     )
                     Text(
                         text = "50%",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall,
                         color = axisTextColor,
                         modifier = Modifier.padding(end = 6.dp)
                     )
                     Text(
                         text = "0%",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall,
                         color = axisTextColor,
                         modifier = Modifier.padding(end = 6.dp)
                     )
@@ -427,7 +427,7 @@ fun ModuleCompletionBarChart(
                                         }
                                         Text(
                                             text = "${stat.completionPercent}%",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.5.sp),
                                             fontWeight = if (isSelected || stat.completionPercent > 0) {
                                                 FontWeight.Bold
                                             } else {
@@ -444,7 +444,7 @@ fun ModuleCompletionBarChart(
                                     Spacer(Modifier.height(4.dp))
                                     Text(
                                         text = stat.shortLabel,
-                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.5.sp),
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                         color = if (isSelected) labelTextColor else axisTextColor,
                                         maxLines = 1,
@@ -468,8 +468,8 @@ fun ModuleCompletionBarChart(
         }
         Surface(
             shape = RoundedCornerShape(12.dp),
-            color = inspectColor.copy(alpha = 0.1f),
-            border = BorderStroke(1.dp, inspectColor.copy(alpha = 0.3f)),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+            border = BorderStroke(1.dp, inspectColor.copy(alpha = 0.45f)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
@@ -487,7 +487,7 @@ fun ModuleCompletionBarChart(
                     val accText = if (selectedStat.avgBestAccuracy > 0) {
                         " • সেরা নির্ভুলতা: ${selectedStat.avgBestAccuracy}%"
                     } else {
-                        " • এখনো অনুশীলন শুরু হয়নি"
+                        " • এখনো শুরু হয়নি"
                     }
                     Text(
                         text = "${selectedStat.solved}/${selectedStat.total} সমস্যা সমাধান$accText",
@@ -549,7 +549,7 @@ fun TopicMasteryBar(
                     ) {
                         Text(
                             text = language,
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
                             fontWeight = FontWeight.Bold,
                             color = badgeColor,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -606,7 +606,7 @@ fun PracticeActivityBarChart(
     val maxVal = (displayLogs.maxOfOrNull { maxOf(it.problemsSolved, it.runsCount) } ?: 1).coerceAtLeast(1)
     val textMeasurer = rememberTextMeasurer()
     val labelStyle = TextStyle(
-        fontSize = 10.sp,
+        fontSize = 11.5.sp,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface
     )
@@ -717,7 +717,7 @@ fun AccuracyTrendChart(
     val points = accuracies.takeLast(8)
     val textMeasurer = rememberTextMeasurer()
     val pointLabelStyle = TextStyle(
-        fontSize = 10.sp,
+        fontSize = 11.5.sp,
         fontWeight = FontWeight.Bold,
         color = lineColor
     )
@@ -730,15 +730,15 @@ fun AccuracyTrendChart(
         ) {
             Column(
                 modifier = Modifier
-                    .width(36.dp)
+                    .width(38.dp)
                     .height(132.dp)
                     .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.End
             ) {
-                Text("100%", style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp), color = axisColor)
-                Text("50%", style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp), color = axisColor)
-                Text("0%", style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp), color = axisColor)
+                Text("100%", style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp), color = axisColor)
+                Text("50%", style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp), color = axisColor)
+                Text("0%", style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp), color = axisColor)
             }
             Spacer(Modifier.width(6.dp))
             Canvas(
