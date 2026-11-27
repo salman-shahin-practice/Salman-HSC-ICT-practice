@@ -7,7 +7,9 @@
     <string name="instructor_college">আদ্-দ্বীন সায়েন্স কলেজ, রংপুর</string>
     <string name="instructor_message">প্রিয় HSC শিক্ষার্থীরা, মুখস্থ নয়—নিজের হাতে কোড লিখে ও ভুল থেকে শিখেই ICT-তে সর্বোচ্চ নম্বর পাওয়া সম্ভব।</string>
     <string name="helpline_number">০১৯৫১-৭৯১৫৩২</string>
+    <string name="helpline_number_en">01951791532</string>
     <string name="helpline_tel">+8801951791532</string>
+    <string name="whatsapp_url">https://wa.me/8801951791532</string>
     <string name="nav_home">হোম</string>
     <string name="nav_html">HTML</string>
     <string name="nav_c">C ল্যাব</string>

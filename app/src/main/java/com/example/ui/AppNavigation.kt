@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.R
 import com.example.data.repository.IctLabRepository
 import com.example.ui.screens.AdminPanelScreen
+import com.example.ui.screens.AlgorithmFlowchartScreen
 import com.example.ui.screens.CLabScreen
 import com.example.ui.screens.ExamScreen
 import com.example.ui.screens.HomeScreen
@@ -67,6 +68,7 @@ object AppRoutes {
     const val ROUTE_EXAM = "exam"
     const val ROUTE_ADMIN = "admin"
     const val ROUTE_SETTINGS = "settings"
+    const val ROUTE_ALGO_FLOW = "algorithm_flowchart"
 }
 
 private data class NavTab(
@@ -209,7 +211,8 @@ fun HscIctLabApp() {
                                 onNavigateToProgress = { navigateToTab(AppRoutes.ROUTE_PROGRESS) },
                                 onNavigateToSettings = { navController.navigate(AppRoutes.ROUTE_SETTINGS) },
                                 onNavigateToAdmin = { navController.navigate(AppRoutes.ROUTE_ADMIN) },
-                                onUpdateInstructorPhoto = viewModel::updateInstructorPhoto
+                                onUpdateInstructorPhoto = viewModel::updateInstructorPhoto,
+                                onNavigateToAlgoFlow = { navController.navigate(AppRoutes.ROUTE_ALGO_FLOW) }
                             )
                         }
 
@@ -261,7 +264,8 @@ fun HscIctLabApp() {
                                 onAskDoubt = { code, err ->
                                     viewModel.prepareSupportWithCode("C Programming", code, err)
                                     navigateToTab(AppRoutes.ROUTE_SUPPORT)
-                                }
+                                },
+                                onOpenAlgoFlow = { navController.navigate(AppRoutes.ROUTE_ALGO_FLOW) }
                             )
                         }
 
@@ -323,6 +327,17 @@ fun HscIctLabApp() {
                                 onExportBackupJson = viewModel::exportBackupJson,
                                 onImportBackupJson = viewModel::importBackupJson,
                                 onShowMessage = viewModel::showMessage,
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(AppRoutes.ROUTE_ALGO_FLOW) {
+                            AlgorithmFlowchartScreen(
+                                onOpenInCLab = { code, stdin ->
+                                    viewModel.openAlgoCodeInCLab(code, stdin)
+                                    navController.popBackStack()
+                                    navigateToTab(AppRoutes.ROUTE_C_LAB)
+                                },
                                 onBack = { navController.popBackStack() }
                             )
                         }

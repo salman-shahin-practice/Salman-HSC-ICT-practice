@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.local.CurriculumSeed
 import com.example.data.model.ActivityLogEntity
 import com.example.data.model.BookmarkEntity
+import com.example.data.model.CodeDraftEntity
 import com.example.data.model.EditorThemeMode
 import com.example.data.model.MistakeEntryEntity
 import com.example.data.model.NoticeEntity
@@ -21,6 +22,8 @@ import com.example.data.repository.IctLabRepository
 import com.example.engine.CExecutionResult
 import com.example.engine.HtmlAnalyzer
 import com.example.engine.HtmlCheckResult
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,6 +43,7 @@ data class SupportPrefill(
 data class IctLabUiState(
     val problems: List<PracticeProblemEntity> = emptyList(),
     val progressMap: Map<String, UserProgressEntity> = emptyMap(),
+    val draftsMap: Map<String, CodeDraftEntity> = emptyMap(),
     val activityLogs: List<ActivityLogEntity> = emptyList(),
     val bookmarks: List<BookmarkEntity> = emptyList(),
     val mistakes: List<MistakeEntryEntity> = emptyList(),
@@ -52,6 +56,9 @@ data class IctLabUiState(
 )
 
 class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
+
+    private var htmlDraftSaveJob: Job? = null
+    private var cDraftSaveJob: Job? = null
 
     private val coreBundle = combine(
         repo.problemsFlow,
@@ -73,7 +80,11 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         SecondaryData(tickets, notices, quizzes, settings, isOnline)
     }
 
-    val uiState: StateFlow<IctLabUiState> = combine(coreBundle, secondaryBundle) { core, sec ->
+    val uiState: StateFlow<IctLabUiState> = combine(
+        coreBundle,
+        secondaryBundle,
+        repo.draftsFlow
+    ) { core, sec, drafts ->
         val queuedCount = sec.tickets.count { it.syncStatus == SyncStatus.QUEUED_OFFLINE.name } +
             core.progress.count { !it.synced } +
             core.logs.count { !it.synced }
@@ -81,6 +92,7 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         IctLabUiState(
             problems = core.problems,
             progressMap = core.progress.associateBy { it.problemId },
+            draftsMap = drafts.associateBy { it.problemId },
             activityLogs = core.logs,
             bookmarks = core.bookmarks,
             mistakes = core.mistakes,
@@ -146,6 +158,13 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
     init {
         viewModelScope.launch {
             repo.ensureSeeded()
+            repo.getSavedCodeAndStdin(_selectedHtmlProblemId.value)?.let { (savedCode, _) ->
+                _htmlCodeValue.value = TextFieldValue(savedCode, TextRange(savedCode.length))
+            }
+            repo.getSavedCodeAndStdin(_selectedCProblemId.value)?.let { (savedCode, savedStdin) ->
+                _cCodeValue.value = TextFieldValue(savedCode, TextRange(savedCode.length))
+                if (savedStdin != null) _cStdin.value = savedStdin
+            }
         }
         viewModelScope.launch {
             combine(repo.isOnlineFlow, repo.settingsFlow) { online, settings ->
@@ -166,10 +185,32 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         _snackbarMessage.value = msg
     }
 
+    private fun scheduleHtmlDraftSave() {
+        val problemId = _selectedHtmlProblemId.value
+        val code = _htmlCodeValue.value.text
+        htmlDraftSaveJob?.cancel()
+        htmlDraftSaveJob = viewModelScope.launch {
+            delay(450L)
+            repo.saveCodeDraft(problemId, "HTML", code)
+        }
+    }
+
+    private fun scheduleCDraftSave() {
+        val problemId = _selectedCProblemId.value
+        val code = _cCodeValue.value.text
+        val stdin = _cStdin.value
+        cDraftSaveJob?.cancel()
+        cDraftSaveJob = viewModelScope.launch {
+            delay(450L)
+            repo.saveCodeDraft(problemId, "C", code, stdin)
+        }
+    }
+
     // ==================== HTML LAB ACTIONS ====================
     fun selectHtmlProblem(problem: PracticeProblemEntity) {
         _selectedHtmlProblemId.value = problem.id
-        val saved = uiState.value.progressMap[problem.id]?.lastCode?.takeIf { it.isNotBlank() }
+        val draftCode = uiState.value.draftsMap[problem.id]?.code?.takeIf { it.isNotBlank() }
+        val saved = draftCode ?: uiState.value.progressMap[problem.id]?.lastCode?.takeIf { it.isNotBlank() }
         val text = saved ?: problem.starterCode
         _htmlCodeValue.value = TextFieldValue(text, TextRange(text.length))
         _htmlCheckResult.value = null
@@ -179,6 +220,9 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
     fun updateHtmlCode(value: TextFieldValue) {
         val oldText = _htmlCodeValue.value.text
         _htmlCodeValue.value = value
+        if (value.text != oldText) {
+            scheduleHtmlDraftSave()
+        }
         if (value.text.length == oldText.length + 1 && value.selection.start > 0) {
             val typedChar = value.text.getOrNull(value.selection.start - 1)
             if (typedChar == '>') {
@@ -199,19 +243,24 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         val newText = cur.text.substring(0, pos) + suggestion.second + cur.text.substring(pos)
         _htmlCodeValue.value = TextFieldValue(newText, TextRange(pos))
         _autoCloseSuggestion.value = null
+        scheduleHtmlDraftSave()
     }
 
     fun insertHtmlSymbol(symbol: String) {
         _htmlCodeValue.update { insertAtCursor(it, symbol) }
+        scheduleHtmlDraftSave()
     }
 
     fun resetHtmlStarter(problem: PracticeProblemEntity) {
+        htmlDraftSaveJob?.cancel()
         _htmlCodeValue.value = TextFieldValue(problem.starterCode, TextRange(problem.starterCode.length))
         _htmlCheckResult.value = null
+        viewModelScope.launch { repo.clearCodeDraft(problem.id) }
     }
 
     fun loadHtmlSolution(problem: PracticeProblemEntity) {
         _htmlCodeValue.value = TextFieldValue(problem.solutionCode, TextRange(problem.solutionCode.length))
+        scheduleHtmlDraftSave()
     }
 
     fun checkHtmlSolution(problem: PracticeProblemEntity) {
@@ -219,6 +268,7 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         val res = HtmlAnalyzer.analyze(code, problem.requiredTagsCsv)
         _htmlCheckResult.value = res
         viewModelScope.launch {
+            repo.saveCodeDraft(problem.id, "HTML", code)
             repo.recordPracticeAttempt(problem, code, res.passed, res.accuracyPercent)
             if (!res.passed && res.warningsBn.isNotEmpty()) {
                 repo.recordMistake(
@@ -236,23 +286,31 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
     // ==================== C LAB ACTIONS ====================
     fun selectCProblem(problem: PracticeProblemEntity) {
         _selectedCProblemId.value = problem.id
-        val saved = uiState.value.progressMap[problem.id]?.lastCode?.takeIf { it.isNotBlank() }
+        val draft = uiState.value.draftsMap[problem.id]
+        val draftCode = draft?.code?.takeIf { it.isNotBlank() }
+        val saved = draftCode ?: uiState.value.progressMap[problem.id]?.lastCode?.takeIf { it.isNotBlank() }
         val text = saved ?: problem.starterCode
         _cCodeValue.value = TextFieldValue(text, TextRange(text.length))
-        _cStdin.value = problem.testInput
+        _cStdin.value = draft?.stdin?.takeIf { it.isNotEmpty() } ?: problem.testInput
         _cResult.value = null
     }
 
     fun updateCCode(value: TextFieldValue) {
+        val oldText = _cCodeValue.value.text
         _cCodeValue.value = value
+        if (value.text != oldText) {
+            scheduleCDraftSave()
+        }
     }
 
     fun insertCSymbol(symbol: String) {
         _cCodeValue.update { insertAtCursor(it, symbol) }
+        scheduleCDraftSave()
     }
 
     fun updateCStdin(input: String) {
         _cStdin.value = input
+        scheduleCDraftSave()
     }
 
     fun toggleCloudCompiler(enabled: Boolean) {
@@ -260,13 +318,16 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
     }
 
     fun resetCStarter(problem: PracticeProblemEntity) {
+        cDraftSaveJob?.cancel()
         _cCodeValue.value = TextFieldValue(problem.starterCode, TextRange(problem.starterCode.length))
         _cStdin.value = problem.testInput
         _cResult.value = null
+        viewModelScope.launch { repo.clearCodeDraft(problem.id) }
     }
 
     fun loadCSolution(problem: PracticeProblemEntity) {
         _cCodeValue.value = TextFieldValue(problem.solutionCode, TextRange(problem.solutionCode.length))
+        scheduleCDraftSave()
     }
 
     fun clearCResult() {
@@ -279,6 +340,7 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         val preferCloud = _preferCloudCompiler.value
         viewModelScope.launch {
             _isRunningC.value = true
+            repo.saveCodeDraft(problem.id, "C", code, stdin)
             val result = repo.runCProgram(
                 code = code,
                 stdin = stdin,
@@ -336,6 +398,13 @@ class IctLabViewModel(private val repo: IctLabRepository) : ViewModel() {
         } else {
             _cCodeValue.value = TextFieldValue(code, TextRange(code.length))
         }
+    }
+
+    fun openAlgoCodeInCLab(code: String, stdin: String) {
+        _cCodeValue.value = TextFieldValue(code, TextRange(code.length))
+        _cStdin.value = stdin
+        _cResult.value = null
+        scheduleCDraftSave()
     }
 
     // ==================== SUPPORT & EXAM ====================

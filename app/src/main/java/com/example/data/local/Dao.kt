@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.data.model.ActivityLogEntity
 import com.example.data.model.BookmarkEntity
+import com.example.data.model.CodeDraftEntity
 import com.example.data.model.MistakeEntryEntity
 import com.example.data.model.NoticeEntity
 import com.example.data.model.PracticeProblemEntity
@@ -159,4 +160,25 @@ interface QuizAttemptDao {
 
     @Query("UPDATE quiz_attempts SET synced = 1 WHERE synced = 0")
     suspend fun markAllSynced()
+}
+
+@Dao
+interface CodeDraftDao {
+    @Query("SELECT * FROM code_drafts ORDER BY updatedAt DESC")
+    fun observeAllDrafts(): Flow<List<CodeDraftEntity>>
+
+    @Query("SELECT * FROM code_drafts WHERE problemId = :problemId LIMIT 1")
+    suspend fun getDraftForProblem(problemId: String): CodeDraftEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertDraft(draft: CodeDraftEntity)
+
+    @Query("DELETE FROM code_drafts WHERE problemId = :problemId")
+    suspend fun deleteDraft(problemId: String)
+
+    @Query("SELECT * FROM code_drafts")
+    suspend fun getAllDraftsSnapshot(): List<CodeDraftEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllDrafts(items: List<CodeDraftEntity>)
 }

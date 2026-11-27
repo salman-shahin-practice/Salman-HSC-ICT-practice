@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
+import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,10 +28,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.Chat
+import androidx.compose.material.icons.rounded.AccountTree
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.AdminPanelSettings
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.CloudDone
 import androidx.compose.material.icons.rounded.CloudOff
@@ -88,7 +94,8 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToAdmin: () -> Unit,
     onUpdateInstructorPhoto: (Uri) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToAlgoFlow: () -> Unit = {}
 ) {
     val htmlProblems = state.problems.filter { it.language == "HTML" }
     val cProblems = state.problems.filter { it.language == "C" }
@@ -327,6 +334,68 @@ fun HomeScreen(
             }
         }
 
+        // Featured Algorithm, Flowchart & Math Module Card
+        item {
+            Card(
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 720.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .clickable(onClick = onNavigateToAlgoFlow)
+                    .testTag("home_algo_flow_card")
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.AccountTree,
+                            contentDescription = "Algorithm & Flowchart",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = "অ্যালগরিদম, ফ্লোচার্ট ও ম্যাথ",
+                            fontFamily = BengaliFontFamily,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "প্রতীক, সূত্র, উদাহরণ ম্যাথ, ফ্লোচার্ট ও লাইভ ক্যালকুলেটর",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
         // Quick Action Grid (Exam Mode, Bookmarks/Progress, Settings, Admin Panel)
         item {
             Row(
@@ -561,6 +630,69 @@ fun InstructorProfileCard(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            // WhatsApp & Direct Helpline Contact Strip
+            val whatsappNumEn = stringResource(R.string.helpline_number_en)
+            val whatsappUrl = stringResource(R.string.whatsapp_url)
+            val telNumber = stringResource(R.string.helpline_tel)
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = EmeraldSecondary.copy(alpha = 0.09f),
+                border = BorderStroke(1.dp, EmeraldSecondary.copy(alpha = 0.28f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "WhatsApp: $whatsappNumEn",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = EmeraldSecondary,
+                        modifier = Modifier.testTag("instructor_whatsapp_number")
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl))
+                                runCatching { context.startActivity(intent) }
+                                    .onFailure {
+                                        Toast.makeText(context, "WhatsApp বা ব্রাউজার ওপেন করা যায়নি", Toast.LENGTH_SHORT).show()
+                                    }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldSecondary),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("instructor_whatsapp_btn")
+                        ) {
+                            Icon(Icons.AutoMirrored.Rounded.Chat, contentDescription = null, modifier = Modifier.size(17.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("WhatsApp", maxLines = 1)
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$telNumber"))
+                                runCatching { context.startActivity(intent) }
+                                    .onFailure {
+                                        Toast.makeText(context, "ডায়ালার ওপেন করা যায়নি", Toast.LENGTH_SHORT).show()
+                                    }
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("instructor_call_btn")
+                        ) {
+                            Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(17.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("কল করুন", maxLines = 1)
+                        }
+                    }
+                }
+            }
 
             if (onUpdatePhoto != null) {
                 OutlinedButton(

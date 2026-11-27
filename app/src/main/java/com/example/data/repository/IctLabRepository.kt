@@ -5,6 +5,7 @@ import com.example.data.local.AppDatabase
 import com.example.data.local.CurriculumSeed
 import com.example.data.model.ActivityLogEntity
 import com.example.data.model.BookmarkEntity
+import com.example.data.model.CodeDraftEntity
 import com.example.data.model.EditorThemeMode
 import com.example.data.model.MistakeEntryEntity
 import com.example.data.model.NoticeEntity
@@ -42,6 +43,7 @@ class IctLabRepository(context: Context) {
     private val ticketDao = db.supportTicketDao()
     private val noticeDao = db.noticeDao()
     private val quizDao = db.quizAttemptDao()
+    private val draftDao = db.codeDraftDao()
 
     val prefs = UserPreferencesRepository(context)
     val networkMonitor = NetworkMonitor(context)
@@ -54,6 +56,7 @@ class IctLabRepository(context: Context) {
     val ticketsFlow: Flow<List<SupportTicketEntity>> = ticketDao.observeTickets()
     val noticesFlow: Flow<List<NoticeEntity>> = noticeDao.observeNotices()
     val quizAttemptsFlow: Flow<List<QuizAttemptEntity>> = quizDao.observeAttempts()
+    val draftsFlow: Flow<List<CodeDraftEntity>> = draftDao.observeAllDrafts()
     val settingsFlow: Flow<UserSettings> = prefs.settingsFlow
     val isOnlineFlow: Flow<Boolean> = networkMonitor.isOnlineFlow
 
@@ -64,6 +67,39 @@ class IctLabRepository(context: Context) {
         if (noticeDao.countNotices() == 0) {
             noticeDao.insertAll(CurriculumSeed.initialNotices)
         }
+    }
+
+    suspend fun getSavedCodeAndStdin(problemId: String): Pair<String, String?>? = withContext(Dispatchers.IO) {
+        val draft = draftDao.getDraftForProblem(problemId)
+        if (draft != null && draft.code.isNotBlank()) {
+            return@withContext draft.code to draft.stdin.takeIf { it.isNotEmpty() }
+        }
+        val progress = progressDao.getProgressForProblem(problemId)
+        if (progress != null && progress.lastCode.isNotBlank()) {
+            return@withContext progress.lastCode to null
+        }
+        null
+    }
+
+    suspend fun saveCodeDraft(
+        problemId: String,
+        language: String,
+        code: String,
+        stdin: String = ""
+    ) = withContext(Dispatchers.IO) {
+        draftDao.upsertDraft(
+            CodeDraftEntity(
+                problemId = problemId,
+                language = language,
+                code = code,
+                stdin = stdin,
+                updatedAt = System.currentTimeMillis()
+            )
+        )
+    }
+
+    suspend fun clearCodeDraft(problemId: String) = withContext(Dispatchers.IO) {
+        draftDao.deleteDraft(problemId)
     }
 
     suspend fun recordPracticeAttempt(
@@ -338,11 +374,22 @@ class IctLabRepository(context: Context) {
                 put("createdAt", m.createdAt)
             })
         }
-        root.put("version", 1)
+        val draftArr = JSONArray()
+        draftDao.getAllDraftsSnapshot().forEach { d ->
+            draftArr.put(JSONObject().apply {
+                put("problemId", d.problemId)
+                put("language", d.language)
+                put("code", d.code)
+                put("stdin", d.stdin)
+                put("updatedAt", d.updatedAt)
+            })
+        }
+        root.put("version", 2)
         root.put("exportedAt", System.currentTimeMillis())
         root.put("progress", progressArr)
         root.put("bookmarks", bookmarkArr)
         root.put("mistakes", mistakeArr)
+        root.put("drafts", draftArr)
         root.toString(2)
     }
 
@@ -414,6 +461,25 @@ class IctLabRepository(context: Context) {
             if (mistakeList.isNotEmpty()) {
                 mistakeDao.insertAllMistakes(mistakeList)
                 restored += mistakeList.size
+            }
+            val dArr = root.optJSONArray("drafts") ?: JSONArray()
+            val draftList = buildList {
+                for (i in 0 until dArr.length()) {
+                    val o = dArr.getJSONObject(i)
+                    add(
+                        CodeDraftEntity(
+                            problemId = o.getString("problemId"),
+                            language = o.optString("language", "C"),
+                            code = o.optString("code", ""),
+                            stdin = o.optString("stdin", ""),
+                            updatedAt = o.optLong("updatedAt", System.currentTimeMillis())
+                        )
+                    )
+                }
+            }
+            if (draftList.isNotEmpty()) {
+                draftDao.insertAllDrafts(draftList)
+                restored += draftList.size
             }
             restored
         }

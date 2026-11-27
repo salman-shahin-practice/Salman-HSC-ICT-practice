@@ -137,6 +137,15 @@ data class QuizAttemptEntity(
     val synced: Boolean = false
 )
 
+@Entity(tableName = "code_drafts")
+data class CodeDraftEntity(
+    @PrimaryKey val problemId: String,
+    val language: String, // "HTML" or "C"
+    val code: String,
+    val stdin: String = "",
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
 data class ExamQuestion(
     val id: String,
     val category: String, // "HTML" or "C"

@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.rounded.AccountTree
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -97,7 +98,8 @@ fun CLabScreen(
     onBookmark: (PracticeProblemEntity, String) -> Unit,
     onAskDoubt: (String, String) -> Unit,
     modifier: Modifier = Modifier,
-    onClearOutput: () -> Unit = {}
+    onClearOutput: () -> Unit = {},
+    onOpenAlgoFlow: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val cProblems = remember(state.problems) { state.problems.filter { it.language == "C" } }
@@ -115,11 +117,32 @@ fun CLabScreen(
         // Syllabus Module Chips
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "C প্রোগ্রামিং প্র্যাকটিস মডিউল",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "C প্রোগ্রামিং প্র্যাকটিস মডিউল",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (onOpenAlgoFlow != null) {
+                        OutlinedButton(
+                            onClick = onOpenAlgoFlow,
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                            modifier = Modifier.testTag("c_lab_open_algo_btn")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.AccountTree,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(Modifier.width(5.dp))
+                            Text("অ্যালগরিদম ও ম্যাথ", style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

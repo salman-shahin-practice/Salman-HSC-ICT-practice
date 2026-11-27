@@ -21,13 +21,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Chat
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.CloudDone
 import androidx.compose.material.icons.rounded.CloudQueue
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -117,7 +117,9 @@ fun SupportScreen(
     }
 
     val helplineNumber = stringResource(R.string.helpline_number)
+    val helplineNumberEn = stringResource(R.string.helpline_number_en)
     val helplineTel = stringResource(R.string.helpline_tel)
+    val whatsappUrl = stringResource(R.string.whatsapp_url)
 
     Column(modifier = modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = selectedTab) {
@@ -157,7 +159,7 @@ fun SupportScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "সরাসরি সহায়তার জন্য যোগাযোগ করো: $helplineNumber",
+                                    text = "সরাসরি WhatsApp ও কল সহায়তা: $helplineNumberEn ($helplineNumber)",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -165,7 +167,7 @@ fun SupportScreen(
                                         onClick = {
                                             val waIntent = Intent(
                                                 Intent.ACTION_VIEW,
-                                                Uri.parse("https://wa.me/8801951791532")
+                                                Uri.parse(whatsappUrl)
                                             )
                                             runCatching { context.startActivity(waIntent) }
                                                 .onFailure { onShowMessage("WhatsApp বা ব্রাউজার ওপেন করা যায়নি।") }
@@ -175,7 +177,7 @@ fun SupportScreen(
                                             .weight(1f)
                                             .testTag("whatsapp_helpline_btn")
                                     ) {
-                                        Icon(Icons.Rounded.Chat, contentDescription = null, modifier = Modifier.size(18.dp))
+                                        Icon(Icons.AutoMirrored.Rounded.Chat, contentDescription = null, modifier = Modifier.size(18.dp))
                                         Spacer(Modifier.width(6.dp))
                                         Text("WhatsApp")
                                     }
@@ -316,7 +318,7 @@ fun SupportScreen(
                                         .fillMaxWidth()
                                         .testTag("ticket_submit_btn")
                                 ) {
-                                    Icon(Icons.Rounded.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(6.dp))
                                     Text("টিকিট জমা দাও")
                                 }

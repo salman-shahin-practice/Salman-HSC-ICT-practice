@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.data.model.ActivityLogEntity
 import com.example.data.model.BookmarkEntity
+import com.example.data.model.CodeDraftEntity
 import com.example.data.model.MistakeEntryEntity
 import com.example.data.model.NoticeEntity
 import com.example.data.model.PracticeProblemEntity
@@ -22,9 +25,10 @@ import com.example.data.model.UserProgressEntity
         MistakeEntryEntity::class,
         SupportTicketEntity::class,
         NoticeEntity::class,
-        QuizAttemptEntity::class
+        QuizAttemptEntity::class,
+        CodeDraftEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -36,10 +40,28 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun supportTicketDao(): SupportTicketDao
     abstract fun noticeDao(): NoticeDao
     abstract fun quizAttemptDao(): QuizAttemptDao
+    abstract fun codeDraftDao(): CodeDraftDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `code_drafts` (
+                        `problemId` TEXT NOT NULL,
+                        `language` TEXT NOT NULL,
+                        `code` TEXT NOT NULL,
+                        `stdin` TEXT NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`problemId`)
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
 
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -47,7 +69,10 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "hsc_ict_lab_db"
-                ).build().also { INSTANCE = it }
+                )
+                    .addMigrations(MIGRATION_1_2)
+                    .build()
+                    .also { INSTANCE = it }
             }
         }
     }
